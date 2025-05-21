@@ -24,7 +24,7 @@ public class SlideshowClient implements ClientModInitializer {
 		RegistryClient.registerTickEvent(SlideState::tick);
 		RegistryClient.registerClientStoppingEvent(SlideState::onPlayerLeft);
 //		RegistryClient.registerNetworkReceiver(ProjectorOpenScreenPayload.ID, ProjectorOpenScreenPayload::writeBuffer, ProjectorOpenScreenPayload::new, ProjectorOpenScreenPayload::handle);
-		RegistryClient.registerNetworkReceiver(ProjectorImageInfoS2CPayload.ID, ProjectorImageInfoS2CPayload::writeBuffer, ProjectorImageInfoS2CPayload::new, ProjectorImageInfoS2CPayload::handle);
+		RegistryClient.registerNetworkReceiver(ProjectorImageInfoS2CPayload.ID, ProjectorImageInfoS2CPayload::handle);
 		HandledScreens.register(Slideshow.PROJECTOR_SCREEN_HANDLER, ProjectorScreen::new);
 
 		ResourceManagerHelper.get(ResourceType.CLIENT_RESOURCES).registerReloadListener(new SimpleSynchronousResourceReloadListener() {

@@ -4,9 +4,8 @@ import com.mojang.authlib.GameProfile;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.packet.CustomPayload;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
@@ -26,12 +25,12 @@ public class ProjectorExportC2SPayload implements CustomPayload {
         mLocation = location;
     }
 
-    public ProjectorExportC2SPayload(PacketByteBuf buf){
+    public ProjectorExportC2SPayload(RegistryByteBuf buf){
         mFromID = buf.readBoolean();
         mLocation = buf.readString();
     }
 
-    public static void writeBuffer(ProjectorExportC2SPayload payload, PacketByteBuf buffer) {
+    public static void writeBuffer(ProjectorExportC2SPayload payload, RegistryByteBuf buffer) {
         buffer.writeBoolean(payload.mFromID);
         buffer.writeString(payload.mLocation);
     }
@@ -45,32 +44,30 @@ public class ProjectorExportC2SPayload implements CustomPayload {
 
     public static void handle(ProjectorExportC2SPayload payload, ServerPlayNetworking.Context context){
         ServerPlayerEntity serverPlayer = context.player();
-        MinecraftServer server = context.server();
-        server.execute(() -> {
-            if (ProjectorBlock.hasPermission(serverPlayer)) {
-                ItemStack itemStack = payload.getImageItem();
-                boolean bl = serverPlayer.getInventory().insertStack(itemStack);
-                if (bl && itemStack.isEmpty()) {
-                    itemStack.setCount(1);
-                    ItemEntity itemEntity = serverPlayer.dropItem(itemStack, false);
-                    if (itemEntity != null) {
-                        itemEntity.setDespawnImmediately();
-                    }
-
-                    serverPlayer.getWorld().playSound(null, serverPlayer.getX(), serverPlayer.getY(), serverPlayer.getZ(), SoundEvents.ENTITY_ITEM_PICKUP, SoundCategory.PLAYERS, 0.2F, ((serverPlayer.getRandom().nextFloat() - serverPlayer.getRandom().nextFloat()) * 0.7F + 1.0F) * 2.0F);
-                    serverPlayer.playerScreenHandler.sendContentUpdates();
-                } else {
-                    ItemEntity itemEntity = serverPlayer.dropItem(itemStack, false);
-                    if (itemEntity != null) {
-                        itemEntity.resetPickupDelay();
-                        itemEntity.setOwner(serverPlayer.getUuid());
-                    }
+        if (ProjectorBlock.hasPermission(serverPlayer)) {
+            ItemStack itemStack = payload.getImageItem();
+            boolean bl = serverPlayer.getInventory().insertStack(itemStack);
+            if (bl && itemStack.isEmpty()) {
+                itemStack.setCount(1);
+                ItemEntity itemEntity = serverPlayer.dropItem(itemStack, false);
+                if (itemEntity != null) {
+                    itemEntity.setDespawnImmediately();
                 }
-                return;
+
+                serverPlayer.getWorld().playSound(null, serverPlayer.getX(), serverPlayer.getY(), serverPlayer.getZ(), SoundEvents.ENTITY_ITEM_PICKUP, SoundCategory.PLAYERS, 0.2F, ((serverPlayer.getRandom().nextFloat() - serverPlayer.getRandom().nextFloat()) * 0.7F + 1.0F) * 2.0F);
+                serverPlayer.playerScreenHandler.sendContentUpdates();
+            } else {
+                ItemEntity itemEntity = serverPlayer.dropItem(itemStack, false);
+                if (itemEntity != null) {
+                    itemEntity.resetPickupDelay();
+                    itemEntity.setOwner(serverPlayer.getUuid());
+                }
             }
-            GameProfile profile = serverPlayer.getGameProfile();
-            Slideshow.LOGGER.debug(Utilities.MARKER, "Received illegal packet for projector export: player = {}", profile);
-        });
+            return;
+        }
+        GameProfile profile = serverPlayer.getGameProfile();
+        Slideshow.LOGGER.debug(Utilities.MARKER, "Received illegal packet for projector export: player = {}", profile);
+
     }
 
     @Override
