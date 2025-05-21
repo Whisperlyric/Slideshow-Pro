@@ -3,7 +3,7 @@ package org.teacon.slides.network;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.packet.CustomPayload;
 import net.minecraft.util.math.BlockPos;
 import org.teacon.slides.Slideshow;
@@ -28,7 +28,7 @@ public class ProjectorImageInfoS2CPayload implements CustomPayload {
         this.str1 = entity.mCNextLocation;
     }
 
-    public ProjectorImageInfoS2CPayload(PacketByteBuf buffer) {
+    public ProjectorImageInfoS2CPayload(RegistryByteBuf buffer) {
         this.mPos = buffer.readBlockPos();
         this.bl0 = buffer.readBoolean();
         this.str0 = buffer.readString();
@@ -36,7 +36,7 @@ public class ProjectorImageInfoS2CPayload implements CustomPayload {
         this.str1 = buffer.readString();
     }
 
-    public static void writeBuffer(ProjectorImageInfoS2CPayload payload, PacketByteBuf buffer) {
+    public static void writeBuffer(ProjectorImageInfoS2CPayload payload, RegistryByteBuf buffer) {
         buffer.writeBlockPos(payload.mPos);
         buffer.writeBoolean(payload.bl0);
         buffer.writeString(payload.str0);
@@ -48,17 +48,16 @@ public class ProjectorImageInfoS2CPayload implements CustomPayload {
         MinecraftClient client = context.client();
         client.execute(() -> {
             if (client.world != null) {
-                BlockEntity entity = client.world.getBlockEntity(payload.mPos);
-                if (entity instanceof ProjectorBlockEntity entity1) {
-                    entity1.mCFromID = payload.bl0;
-                    entity1.mCLocation = payload.str0;
-                    entity1.mCNextFromID = payload.bl1;
-                    entity1.mCNextLocation = payload.str1;
-                    return;
-                }
+            BlockEntity entity = client.world.getBlockEntity(payload.mPos);
+            if (entity instanceof ProjectorBlockEntity entity1) {
+                entity1.mCFromID = payload.bl0;
+                entity1.mCLocation = payload.str0;
+                entity1.mCNextFromID = payload.bl1;
+                entity1.mCNextLocation = payload.str1;
+                return;
             }
             Slideshow.LOGGER.debug(Utilities.MARKER, "Received illegal packet for image info in {}.", payload.mPos);
-        });
+        }});
     }
 
     @Override

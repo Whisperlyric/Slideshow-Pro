@@ -12,7 +12,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.block.entity.BlockEntityRendererFactories;
 import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
-import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketDecoder;
 import net.minecraft.network.codec.ValueFirstEncoder;
@@ -30,13 +30,19 @@ public class RegistryClient {
 		BlockEntityRendererFactories.register(type, function);
 	}
 
+	public static <V extends CustomPayload> void registerCodec(
+			CustomPayload.Id<V> id,
+		   final ValueFirstEncoder<RegistryByteBuf, V> encoder,
+		   final PacketDecoder<RegistryByteBuf, V> decoder
+	) {
+		PayloadTypeRegistry.playC2S().register(id, PacketCodec.of(encoder, decoder));
+		PayloadTypeRegistry.playS2C().register(id, PacketCodec.of(encoder, decoder));
+	}
+
 	public static <V extends CustomPayload> void registerNetworkReceiver(
 			CustomPayload.Id<V> id,
-			final ValueFirstEncoder<PacketByteBuf, V> encoder,
-			final PacketDecoder<PacketByteBuf, V> decoder,
 			ClientPlayNetworking.PlayPayloadHandler<V> handler
 	) {
-		PayloadTypeRegistry.playS2C().register(id, PacketCodec.of(encoder, decoder));
 		ClientPlayNetworking.registerGlobalReceiver(id, handler);
 	}
 

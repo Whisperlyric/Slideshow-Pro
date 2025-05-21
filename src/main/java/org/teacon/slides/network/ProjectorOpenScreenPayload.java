@@ -1,6 +1,6 @@
 package org.teacon.slides.network;
 
-import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.util.math.BlockPos;
 
 public class ProjectorOpenScreenPayload {
@@ -11,11 +11,11 @@ public class ProjectorOpenScreenPayload {
         this.pos = pos;
     }
 
-    public ProjectorOpenScreenPayload(PacketByteBuf buffer) {
+    public ProjectorOpenScreenPayload(RegistryByteBuf buffer) {
         this.pos = buffer.readBlockPos();
     }
 
-    public static void writeBuffer(ProjectorOpenScreenPayload payload, PacketByteBuf buffer) {
+    public static void writeBuffer(ProjectorOpenScreenPayload payload, RegistryByteBuf buffer) {
         buffer.writeBlockPos(payload.pos);
     }
 }

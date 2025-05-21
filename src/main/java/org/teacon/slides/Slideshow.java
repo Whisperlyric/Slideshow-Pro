@@ -22,12 +22,9 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.teacon.slides.item.FlipperItem;
 import org.teacon.slides.item.ImageItem;
-import org.teacon.slides.network.FlipperFlipBackC2SPayload;
-import org.teacon.slides.network.ProjectorOpenScreenPayload;
+import org.teacon.slides.network.*;
 import org.teacon.slides.projector.ProjectorBlock;
 import org.teacon.slides.projector.ProjectorBlockEntity;
-import org.teacon.slides.network.ProjectorExportC2SPayload;
-import org.teacon.slides.network.ProjectorAfterUpdateC2SPayload;
 import org.teacon.slides.projector.ProjectorScreenHandler;
 import org.teacon.slides.util.RegistryServer;
 
@@ -83,9 +80,13 @@ public class Slideshow implements ModInitializer {
 
 	@Override
 	public void onInitialize() {
-		RegistryServer.registerNetworkReceiver(ProjectorAfterUpdateC2SPayload.ID, ProjectorAfterUpdateC2SPayload::writeBuffer, ProjectorAfterUpdateC2SPayload::new, ProjectorAfterUpdateC2SPayload::handle);
-		RegistryServer.registerNetworkReceiver(ProjectorExportC2SPayload.ID, ProjectorExportC2SPayload::writeBuffer, ProjectorExportC2SPayload::new, ProjectorExportC2SPayload::handle);
-		RegistryServer.registerNetworkReceiver(FlipperFlipBackC2SPayload.ID, FlipperFlipBackC2SPayload::writeBuffer, FlipperFlipBackC2SPayload::new, FlipperFlipBackC2SPayload::handle);
+		RegistryServer.registerCodec(ProjectorAfterUpdateC2SPayload.ID, ProjectorAfterUpdateC2SPayload::writeBuffer, ProjectorAfterUpdateC2SPayload::new);
+		RegistryServer.registerCodec(ProjectorExportC2SPayload.ID, ProjectorExportC2SPayload::writeBuffer, ProjectorExportC2SPayload::new);
+		RegistryServer.registerCodec(FlipperFlipBackC2SPayload.ID, FlipperFlipBackC2SPayload::writeBuffer, FlipperFlipBackC2SPayload::new);
+		RegistryServer.registerCodec(ProjectorImageInfoS2CPayload.ID, ProjectorImageInfoS2CPayload::writeBuffer, ProjectorImageInfoS2CPayload::new);
+		RegistryServer.registerNetworkReceiver(ProjectorAfterUpdateC2SPayload.ID, ProjectorAfterUpdateC2SPayload::handle);
+		RegistryServer.registerNetworkReceiver(ProjectorExportC2SPayload.ID, ProjectorExportC2SPayload::handle);
+		RegistryServer.registerNetworkReceiver(FlipperFlipBackC2SPayload.ID, FlipperFlipBackC2SPayload::handle);
 	}
 
 	private static Item registerItem(String path, Item item, RegistryKey<ItemGroup> group) {

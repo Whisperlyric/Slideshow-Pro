@@ -6,9 +6,8 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.packet.CustomPayload;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
@@ -34,14 +33,14 @@ public final class ProjectorAfterUpdateC2SPayload implements CustomPayload {
 		mIC = entity.needInitContainer;
 	}
 
-	public ProjectorAfterUpdateC2SPayload(PacketByteBuf buf) {
+	public ProjectorAfterUpdateC2SPayload(RegistryByteBuf buf) {
 		mPos = buf.readBlockPos();
 		mRotation = ProjectorBlock.InternalRotation.VALUES[buf.readVarInt()];
 		mTag = buf.readNbt();
 		mIC = buf.readBoolean();
 	}
 
-	public static void writeBuffer(ProjectorAfterUpdateC2SPayload payload, PacketByteBuf buffer) {
+	public static void writeBuffer(ProjectorAfterUpdateC2SPayload payload, RegistryByteBuf buffer) {
 		buffer.writeBlockPos(payload.mPos);
 		buffer.writeVarInt(payload.mRotation.ordinal());
 		buffer.writeNbt(payload.mTag);
@@ -50,29 +49,25 @@ public final class ProjectorAfterUpdateC2SPayload implements CustomPayload {
 
 	public static void handle(ProjectorAfterUpdateC2SPayload payload, ServerPlayNetworking.Context context) {
 		ServerPlayerEntity player = context.player();
-		MinecraftServer server = context.server();
-		server.execute(() -> {
-			ServerWorld level = player.getServerWorld();
-			BlockPos pos = payload.mPos;
-			BlockEntity blockEntity = level.getBlockEntity(pos);
-			// prevent remote chunk loading
-			if (ProjectorBlock.hasPermission(player) && level.canSetBlock(pos) && blockEntity instanceof ProjectorBlockEntity blockEntity1) {
-				BlockState state = blockEntity.getCachedState().with(ProjectorBlock.ROTATION, payload.mRotation);
-				blockEntity1.loadCompound(payload.mTag);
-				blockEntity1.needInitContainer = payload.mIC;
+		ServerWorld level = player.getServerWorld();
+		BlockPos pos = payload.mPos;
+		BlockEntity blockEntity = level.getBlockEntity(pos);
+		// prevent remote chunk loading
+		if (ProjectorBlock.hasPermission(player) && level.canSetBlock(pos) && blockEntity instanceof ProjectorBlockEntity blockEntity1) {
+			BlockState state = blockEntity.getCachedState().with(ProjectorBlock.ROTATION, payload.mRotation);
+			blockEntity1.loadCompound(payload.mTag);
+			blockEntity1.needInitContainer = payload.mIC;
 
-				if(!level.setBlockState(pos, state, Block.NOTIFY_ALL)) {
-					level.updateListeners(pos, state, state, Block.NOTIFY_LISTENERS);
-				}
-
-				// mark chunk unsaved
-				blockEntity.markDirty();
-				return;
+			if(!level.setBlockState(pos, state, Block.NOTIFY_ALL)) {
+				level.updateListeners(pos, state, state, Block.NOTIFY_LISTENERS);
 			}
-			GameProfile profile = player.getGameProfile();
-			Slideshow.LOGGER.debug(Utilities.MARKER, "Received illegal packet for projector update: player = {}, pos = {}", profile, payload.mPos);
-		});
 
+			// mark chunk unsaved
+			blockEntity.markDirty();
+			return;
+		}
+		GameProfile profile = player.getGameProfile();
+		Slideshow.LOGGER.debug(Utilities.MARKER, "Received illegal packet for projector update: player = {}, pos = {}", profile, payload.mPos);
 	}
 
 	@Override

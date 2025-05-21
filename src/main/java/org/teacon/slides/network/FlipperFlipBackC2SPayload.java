@@ -3,9 +3,8 @@ package org.teacon.slides.network;
 import com.mojang.authlib.GameProfile;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.packet.CustomPayload;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import org.teacon.slides.Slideshow;
 import org.teacon.slides.util.Utilities;
@@ -21,26 +20,23 @@ public final class FlipperFlipBackC2SPayload implements CustomPayload  {
         this.slot = slot;
     }
 
-    public FlipperFlipBackC2SPayload(PacketByteBuf buf) {
+    public FlipperFlipBackC2SPayload(RegistryByteBuf buf) {
         slot = buf.readInt();
     }
 
-    public static void writeBuffer(FlipperFlipBackC2SPayload payload, PacketByteBuf buffer) {
+    public static void writeBuffer(FlipperFlipBackC2SPayload payload, RegistryByteBuf buffer) {
         buffer.writeInt(payload.slot);
     }
 
     public static void handle(FlipperFlipBackC2SPayload payload, ServerPlayNetworking.Context context) {
         int i = payload.slot;
         ServerPlayerEntity serverPlayer = context.player();
-        MinecraftServer minecraftServer = context.server();
-        minecraftServer.execute(() -> {
-            ItemStack itemStack = serverPlayer.getInventory().getStack(i);
-            if (itemStack.isOf(Slideshow.FLIPPER_ITEM) && FlipperItem.trySendFlip(serverPlayer.getServerWorld(), serverPlayer, itemStack, true, false)) {
-                return;
-            }
-            GameProfile profile = serverPlayer.getGameProfile();
-            Slideshow.LOGGER.debug(Utilities.MARKER, "Received illegal packet for flip back: player = {}", profile);
-        });
+        ItemStack itemStack = serverPlayer.getInventory().getStack(i);
+        if (itemStack.isOf(Slideshow.FLIPPER_ITEM) && FlipperItem.trySendFlip(serverPlayer.getServerWorld(), serverPlayer, itemStack, true, false)) {
+            return;
+        }
+        GameProfile profile = serverPlayer.getGameProfile();
+        Slideshow.LOGGER.debug(Utilities.MARKER, "Received illegal packet for flip back: player = {}", profile);
     }
 
     @Override
