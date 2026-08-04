@@ -1,0 +1,4 @@
+accessWidener	v2	named
+accessible	field	com/mojang/blaze3d/platform/NativeImage	pixels	J
+accessible	method	com/mojang/blaze3d/platform/NativeImage$Format	getStbFormat	(I)Lcom/mojang/blaze3d/platform/NativeImage$Format;
+accessible	method	com/mojang/blaze3d/platform/NativeImage	<init>	(Lcom/mojang/blaze3d/platform/NativeImage$Format;IIZJ)V

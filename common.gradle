@@ -1,0 +1,96 @@
+final int mcVersion = project.mcVersion
+final boolean unobfuscated = mcVersion >= 26_00_00
+
+apply plugin: 'maven-publish'
+apply plugin: unobfuscated ? 'net.fabricmc.fabric-loom' : 'net.fabricmc.fabric-loom-remap'
+apply plugin: 'com.replaymod.preprocess'
+
+loom {
+    accessWidenerPath = file("src/main/resources/slide_show.accesswidener")
+}
+
+repositories {
+    maven { url "https://api.modrinth.com/maven" }
+    maven {
+        name = 'ParchmentMC'
+        url = 'https://maven.parchmentmc.org'
+    }
+}
+
+dependencies {
+    minecraft "com.mojang:minecraft:${project.minecraft_version}"
+    if (!unobfuscated) {
+        mappings loom.layered() {
+            officialMojangMappings()
+            parchment("org.parchmentmc.data:parchment-${project.minecraft_version}:${project.parchment_version}@zip")
+        }
+    }
+    if (unobfuscated) {
+        implementation "net.fabricmc:fabric-loader:${project.loader_version}"
+        implementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
+    } else {
+        modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
+        modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
+    }
+
+    // Third-party libraries (pure Java, no remapping needed)
+    implementation 'dev.matrixlab.webp4j:webp4j-core:2.1.0'
+    implementation 'net.spy:spymemcached:2.12.0'
+    implementation 'net.sf.ehcache:ehcache:2.10.6'
+    // Apache HttpClient used by the bundled HTTP cache implementation (bundled by Minecraft itself before 1.21.11)
+    implementation 'org.apache.httpcomponents:httpclient:4.5.14'
+    implementation 'org.apache.httpcomponents:httpcore:4.4.16'
+}
+
+JavaVersion JAVA_COMPATIBILITY = JavaVersion.VERSION_21
+if (unobfuscated) JAVA_COMPATIBILITY = JavaVersion.VERSION_25
+
+java {
+    sourceCompatibility = JAVA_COMPATIBILITY
+    targetCompatibility = JAVA_COMPATIBILITY
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = "UTF-8"
+}
+
+jar {
+    archiveBaseName = "slideshow_pro"
+    archiveVersion = "fabric${project.name}-${project.mod_version}"
+    archiveClassifier = ""
+}
+
+if (!unobfuscated) {
+    remapJar {
+        archiveBaseName = "slideshow_pro"
+        archiveVersion = "fabric${project.name}-${project.mod_version}"
+        archiveClassifier = ""
+    }
+}
+
+afterEvaluate {
+    println "[${project.name}] Preprocess tasks: ${tasks.names.findAll { it.toLowerCase().contains('preprocess') || it.toLowerCase().contains('setcore') }}"
+    println "[${project.name}] Source dirs: ${sourceSets.main.java.srcDirs}"
+
+    def mainProjectName = rootProject.file('versions/mainProject').text.trim()
+    if (project.name != mainProjectName) {
+        tasks.matching { it.name == 'preprocessCode' }.configureEach {
+            def mainCompile = rootProject.project(":${mainProjectName}").tasks.named('compileJava')
+            dependsOn(mainCompile)
+        }
+    }
+}
+
+processResources {
+    inputs.property "version", project.mod_version
+    inputs.property "minecraft_range", project.minecraft_range
+    inputs.property "java_version", JAVA_COMPATIBILITY.toString()
+    inputs.property "loader_version", project.loader_version
+
+    filesMatching("fabric.mod.json") {
+        expand "version": project.mod_version,
+               "minecraft_range": project.minecraft_range,
+               "java_version": JAVA_COMPATIBILITY.toString(),
+               "loader_version": project.loader_version
+    }
+}
