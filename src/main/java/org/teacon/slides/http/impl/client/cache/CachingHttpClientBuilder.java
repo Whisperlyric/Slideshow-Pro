@@ -78,12 +78,7 @@ public class CachingHttpClientBuilder extends HttpClientBuilder {
          } else {
             final ManagedHttpCacheStorage managedStorage = new ManagedHttpCacheStorage(config);
             if (this.deleteCache) {
-               this.addCloseable(new Closeable() {
-                  @Override
-                  public void close() throws IOException {
-                     managedStorage.shutdown();
-                  }
-               });
+               this.addCloseable(managedStorage::shutdown);
             } else {
                this.addCloseable(managedStorage);
             }

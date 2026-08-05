@@ -5,6 +5,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.NotNull;
 import org.teacon.slides.Slideshow;
 import org.teacon.slides.network.ProjectorOpenScreenPayload;
 
@@ -20,11 +21,11 @@ public class ProjectorScreenHandler extends AbstractContainerMenu {
       return this.pos;
    }
 
-   public ItemStack quickMoveStack(Player player, int slot) {
+   public @NotNull ItemStack quickMoveStack(Player player, int slot) {
       return ItemStack.EMPTY;
    }
 
    public boolean stillValid(Player player) {
-      return player instanceof ServerPlayer serverPlayer ? ProjectorBlock.hasProjectorPermission(serverPlayer) : false;
+      return player instanceof ServerPlayer serverPlayer && ProjectorBlock.hasProjectorPermission(serverPlayer);
    }
 }

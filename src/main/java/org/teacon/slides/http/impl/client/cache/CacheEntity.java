@@ -1,9 +1,7 @@
 package org.teacon.slides.http.impl.client.cache;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.Serializable;
+import java.io.*;
+
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.annotation.Contract;
@@ -15,6 +13,7 @@ import org.teacon.slides.http.client.cache.HttpCacheEntry;
    threading = ThreadingBehavior.IMMUTABLE
 )
 class CacheEntity implements HttpEntity, Serializable {
+   @Serial
    private static final long serialVersionUID = -3467082284120936233L;
    private final HttpCacheEntry cacheEntry;
 

@@ -77,8 +77,6 @@ public class ImageProperties {
          case DOWN:
             this.angleX = 180;
          case UP:
-         default:
-            break;
          case NORTH:
             this.angleX = 90;
             this.angleZ = 180;
@@ -93,6 +91,8 @@ public class ImageProperties {
          case EAST:
             this.angleX = 90;
             this.angleZ = -90;
+         default:
+             break;
       }
    }
 

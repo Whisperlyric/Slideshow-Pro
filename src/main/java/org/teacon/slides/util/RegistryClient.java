@@ -17,7 +17,6 @@ import net.minecraft.client.renderer.RenderType;
 //$$ import net.minecraft.client.renderer.chunk.ChunkSectionLayer;
 //#endif
 //#if MC >= 12110
-//$$ import net.fabricmc.fabric.api.client.rendering.v1.BlockEntityRendererRegistry;
 //$$ import net.minecraft.client.renderer.blockentity.state.BlockEntityRenderState;
 //#endif
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
@@ -44,8 +43,8 @@ public class RegistryClient {
 //#endif
 
 //#if MC >= 12110
-   //$$ public static <T extends BlockEntity, S extends BlockEntityRenderState> void registerBlockEntityRenderer(BlockEntityType<T> type, BlockEntityRendererProvider<? super T, ? super S> function) {
-   //$$    BlockEntityRendererRegistry.register(type, function);
+   //$$ public static <T extends BlockEntity, S extends BlockEntityRenderState> void registerBlockEntityRenderer(BlockEntityType<T> type, BlockEntityRendererProvider<T, S> function) {
+   //$$    BlockEntityRenderers.register(type, function);
    //$$ }
 //#else
    public static <T extends BlockEntity> void registerBlockEntityRenderer(BlockEntityType<T> type, BlockEntityRendererProvider<? super T> function) {

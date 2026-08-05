@@ -4,7 +4,6 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Sets;
 import com.google.common.collect.Streams;
 import com.google.common.collect.ImmutableMap.Builder;
-import com.google.common.hash.Hashing;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
@@ -20,7 +19,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.Date;
+import java.util.HexFormat;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Locale;
@@ -83,7 +85,14 @@ final class CacheStorage implements HttpCacheStorage {
    }
 
    private static String allocateImageName(byte[] bytes) {
-      String hashString = Hashing.sha1().hashBytes(bytes).toString();
+      MessageDigest sha1;
+      try {
+         sha1 = MessageDigest.getInstance("SHA-1");
+      } catch (NoSuchAlgorithmException e) {
+         throw new IllegalStateException("SHA-1 is not available", e);
+      }
+
+      String hashString = HexFormat.of().formatHex(sha1.digest(bytes));
 
       try {
          String var12;

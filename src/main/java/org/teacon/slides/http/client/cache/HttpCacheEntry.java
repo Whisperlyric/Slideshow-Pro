@@ -1,5 +1,6 @@
 package org.teacon.slides.http.client.cache;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.Date;
@@ -19,6 +20,7 @@ import org.apache.http.util.Args;
    threading = ThreadingBehavior.IMMUTABLE
 )
 public class HttpCacheEntry implements Serializable {
+   @Serial
    private static final long serialVersionUID = -6300496422359477413L;
    private static final String REQUEST_METHOD_HEADER_NAME = "Hc-Request-Method";
    private final Date requestDate;

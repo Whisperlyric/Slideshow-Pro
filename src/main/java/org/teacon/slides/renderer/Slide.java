@@ -74,21 +74,33 @@ public abstract class Slide implements AutoCloseable {
 		public void render(@NotNull MultiBufferSource source, @NotNull Matrix4f matrix,
 						   @NotNull PoseStack.Pose normal, float width, float height, int color,
 						   int light, int overlay, boolean front, boolean back, long tick, float partialTick) {
+//#if MC >= 12111
+			//$$ renderQuads(source.getBuffer(mTexture.updateAndGet(tick, partialTick).asRenderType()), matrix, normal, width, height, color, light, overlay, front, back, tick, partialTick);
+//#else
 			renderQuads(source.getBuffer(mTexture.updateAndGet(tick, partialTick)), matrix, normal, width, height, color, light, overlay, front, back, tick, partialTick);
+//#endif
 		}
 
 //#if MC >= 12110
 		//$$ @NotNull
 		//$$ @Override
 		//$$ public RenderType getRenderType(long tick, float partialTick) {
+//#if MC >= 12111
+			//$$ return mTexture.updateAndGet(tick, partialTick).asRenderType();
+//#else
 			//$$ return mTexture.updateAndGet(tick, partialTick);
+//#endif
 		//$$ }
 		//$$
 		//$$ @Override
 		//$$ public void submitTo(SubmitNodeCollector collector, @NotNull Matrix4f matrix,
 								//$$ @NotNull PoseStack.Pose normal, float width, float height, int color,
 								//$$ int light, int overlay, boolean front, boolean back, long tick, float partialTick) {
+//#if MC >= 12111
+			//$$ RenderType renderType = mTexture.updateAndGet(tick, partialTick).asRenderType();
+//#else
 			//$$ RenderType renderType = mTexture.updateAndGet(tick, partialTick);
+//#endif
 			//$$ collector.submitCustomGeometry(new PoseStack(), renderType, (pose, consumer) ->
 					//$$ renderQuads(consumer, matrix, normal, width, height, color, light, overlay, front, back, tick, partialTick));
 		//$$ }
@@ -165,7 +177,11 @@ public abstract class Slide implements AutoCloseable {
 				ICON_FAILED = ResourceLocation.fromNamespaceAndPath(Slideshow.ID, "textures/gui/slide_icon_failed.png"),
 				ICON_LOADING = ResourceLocation.fromNamespaceAndPath(Slideshow.ID, "textures/gui/slide_icon_loading.png");
 
+//#if MC >= 12111
+		//$$ private static final RenderType sBackgroundRenderType = new SlideRenderType(BACKGROUND).asRenderType();
+//#else
 		private static final RenderType sBackgroundRenderType = new SlideRenderType(BACKGROUND);
+//#endif
 
 		private static final Icon DEFAULT_EMPTY = new Icon(ICON_EMPTY);
 		private static final Icon DEFAULT_FAILED = new Icon(ICON_FAILED);
@@ -174,7 +190,11 @@ public abstract class Slide implements AutoCloseable {
 		private final RenderType mIconRenderType;
 
 		private Icon(ResourceLocation icon) {
+//#if MC >= 12111
+			//$$ mIconRenderType = new SlideRenderType(icon).asRenderType();
+//#else
 			mIconRenderType = new SlideRenderType(icon);
+//#endif
 		}
 
 		private static float getFactor(float width, float height) {

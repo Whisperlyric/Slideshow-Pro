@@ -29,6 +29,7 @@ import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.teacon.slides.Slideshow;
 import org.teacon.slides.network.FlipperFlipBackC2SPayload;
@@ -106,7 +107,7 @@ public class FlipperItem extends Item {
       //$$ }
    //$$ }
 //#else
-   public InteractionResultHolder<ItemStack> use(Level world, Player user, InteractionHand hand) {
+   public @NotNull InteractionResultHolder<ItemStack> use(Level world, Player user, InteractionHand hand) {
       ItemStack itemStack = user.getItemInHand(hand);
       if (world.isClientSide()) {
          return InteractionResultHolder.sidedSuccess(itemStack, world.isClientSide());
@@ -118,7 +119,7 @@ public class FlipperItem extends Item {
    }
 //#endif
 
-   public InteractionResult useOn(UseOnContext context) {
+   public @NotNull InteractionResult useOn(UseOnContext context) {
       Level world = context.getLevel();
       if (world.isClientSide()) {
          return InteractionResult.SUCCESS;
@@ -186,6 +187,7 @@ public class FlipperItem extends Item {
 //#endif
 
 //#if MC >= 12105
+   //$$ @SuppressWarnings("deprecation")
    //$$ public void appendHoverText(ItemStack stack, Item.TooltipContext context, TooltipDisplay display, Consumer<Component> tooltip, TooltipFlag type) {
       //$$ List<Integer> pos = getProjectorPos(stack);
       //$$ if (pos == null) {

@@ -10,13 +10,14 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import org.jetbrains.annotations.NotNull;
 import org.teacon.slides.Slideshow;
 import org.teacon.slides.projector.ProjectorBlock;
 import org.teacon.slides.projector.ProjectorBlockEntity;
 import org.teacon.slides.util.Utilities;
 
 public final class ProjectorAfterUpdateC2SPayload implements CustomPacketPayload {
-   public static final Type<ProjectorAfterUpdateC2SPayload> ID = new Type(Slideshow.PACKET_UPDATE);
+   public static final Type<ProjectorAfterUpdateC2SPayload> ID = new Type<>(Slideshow.PACKET_UPDATE);
    private final BlockPos mPos;
    private final ProjectorBlock.InternalRotation mRotation;
    private final CompoundTag mTag;
@@ -63,7 +64,7 @@ public final class ProjectorAfterUpdateC2SPayload implements CustomPacketPayload
       }
    }
 
-   public Type<ProjectorAfterUpdateC2SPayload> type() {
+   public @NotNull Type<ProjectorAfterUpdateC2SPayload> type() {
       return ID;
    }
 }

@@ -4,6 +4,10 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
+//#if MC >= 12111
+//$$ import net.minecraft.server.permissions.Permission.HasCommandLevel;
+//$$ import net.minecraft.server.permissions.PermissionLevel;
+//#endif
 import net.minecraft.commands.arguments.coordinates.BlockPosArgument;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
@@ -19,7 +23,11 @@ public class ProjectorCommand {
    public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
       dispatcher.register(
          (LiteralArgumentBuilder)((LiteralArgumentBuilder)((LiteralArgumentBuilder)((LiteralArgumentBuilder)Commands.literal("projector")
+//#if MC >= 12111
+                     //$$ .requires(source -> source.permissions().hasPermission(new HasCommandLevel(PermissionLevel.byId(ServerConfig.getCommandsPermission())))))
+//#else
                      .requires(source -> source.hasPermission(ServerConfig.getCommandsPermission())))
+//#endif
                   .then(
                      Commands.literal("next")
                         .then(

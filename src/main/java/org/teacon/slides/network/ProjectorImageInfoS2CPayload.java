@@ -5,6 +5,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import org.jetbrains.annotations.NotNull;
 import org.teacon.slides.Slideshow;
 import org.teacon.slides.projector.ProjectorBlockEntity;
 import org.teacon.slides.util.Utilities;
@@ -56,7 +57,7 @@ public class ProjectorImageInfoS2CPayload implements CustomPacketPayload {
       }
    }
 
-   public Type<ProjectorImageInfoS2CPayload> type() {
+   public @NotNull Type<ProjectorImageInfoS2CPayload> type() {
       return ID;
    }
 }

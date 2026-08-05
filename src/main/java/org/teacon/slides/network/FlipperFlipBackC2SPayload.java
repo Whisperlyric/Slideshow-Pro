@@ -9,6 +9,7 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 //#endif
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.NotNull;
 import org.teacon.slides.Slideshow;
 import org.teacon.slides.item.FlipperItem;
 import org.teacon.slides.util.Utilities;
@@ -42,7 +43,7 @@ public final class FlipperFlipBackC2SPayload implements CustomPacketPayload {
       }
    }
 
-   public Type<FlipperFlipBackC2SPayload> type() {
+   public @NotNull Type<FlipperFlipBackC2SPayload> type() {
       return ID;
    }
 }

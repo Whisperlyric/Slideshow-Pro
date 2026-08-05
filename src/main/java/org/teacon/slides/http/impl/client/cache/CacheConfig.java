@@ -86,11 +86,7 @@ public class CacheConfig implements Cloneable {
 
    @Deprecated
    public void setMaxObjectSizeBytes(int maxObjectSizeBytes) {
-      if (maxObjectSizeBytes > Integer.MAX_VALUE) {
-         this.maxObjectSize = 2147483647L;
-      } else {
-         this.maxObjectSize = (long)maxObjectSizeBytes;
-      }
+       this.maxObjectSize = (long) maxObjectSizeBytes;
    }
 
    public long getMaxObjectSize() {

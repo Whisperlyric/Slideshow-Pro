@@ -13,8 +13,14 @@ import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents.ModifyEntries;
 //#if MC >= 12102
 //$$ import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder;
 //#endif
+//#if MC >= 12111
+//$$ import net.fabricmc.fabric.api.resource.v1.ResourceLoader;
+//$$ import net.minecraft.resources.Identifier;
+//$$ import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
+//#else
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.fabricmc.fabric.api.resource.SimpleSynchronousResourceReloadListener;
+//#endif
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerType;
 import net.minecraft.commands.synchronization.SingletonArgumentInfo;
 import net.minecraft.core.Registry;
@@ -153,6 +159,14 @@ public class Slideshow implements ModInitializer {
          MC_SERVER = null;
          ServerConfig.uninit();
       });
+//#if MC >= 12111
+      //$$ ResourceLoader.get(PackType.SERVER_DATA).registerReloader(Identifier.fromNamespaceAndPath("slide_show", "server_reload"), new ResourceManagerReloadListener() {
+         //$$ public void onResourceManagerReload(ResourceManager manager) {
+            //$$ ServerConfig.init(Slideshow.MC_SERVER);
+            //$$ ServerConfig.refreshProperties();
+         //$$ }
+      //$$ });
+//#else
       ResourceManagerHelper.get(PackType.SERVER_DATA).registerReloadListener(new SimpleSynchronousResourceReloadListener() {
          private final ResourceLocation id = ResourceLocation.fromNamespaceAndPath("slide_show", "server_reload");
 
@@ -165,6 +179,7 @@ public class Slideshow implements ModInitializer {
             return this.id;
          }
       });
+//#endif
    }
 
 //#if MC >= 12102

@@ -4,9 +4,13 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.VertexFormat;
 //#if MC >= 12111
-//$$ import com.mojang.blaze3d.pipeline.RenderPipeline;
+//$$ import com.mojang.blaze3d.textures.GpuSampler;
+//$$ import com.mojang.blaze3d.textures.GpuTexture;
+//$$ import net.minecraft.client.Minecraft;
+//$$ import net.minecraft.client.renderer.RenderPipelines;
 //$$ import net.minecraft.client.renderer.rendertype.RenderSetup;
 //$$ import net.minecraft.client.renderer.rendertype.RenderType;
+//$$ import net.minecraft.client.renderer.texture.AbstractTexture;
 //#elseif MC >= 12108
 //$$ import com.mojang.blaze3d.buffers.GpuBuffer;
 //$$ import com.mojang.blaze3d.buffers.GpuBufferSlice;
@@ -47,19 +51,41 @@ import org.teacon.slides.Slideshow;
 //#if MC >= 12111
 //$$ public class SlideRenderType {
 //$$ 	private static final String ID_ICON = Slideshow.ID + "icon";
-//$$ 
+//$$
 //$$ 	private final RenderType delegate;
-//$$ 
-//$$ 	public SlideRenderType(int texture) {
-//$$ 		this.delegate = null;
+//$$
+//$$ 	public SlideRenderType(GpuTexture texture, GpuSampler sampler) {
+//$$ 		this.delegate = RenderType.create(Slideshow.ID, RenderSetup.builder(RenderPipelines.TRANSLUCENT_MOVING_BLOCK)
+//$$ 				.withTexture("Sampler0", registerTexture(texture, sampler))
+//$$ 				.useLightmap()
+//$$ 				.createRenderSetup());
 //$$ 	}
-//$$ 
-//$$ 	public SlideRenderType(GpuTexture texture) {
-//$$ 		this.delegate = null;
+//$$
+//$$ 	SlideRenderType(Identifier texture) {
+//$$ 		this.delegate = RenderType.create(ID_ICON, RenderSetup.builder(RenderPipelines.TRANSLUCENT_MOVING_BLOCK)
+//$$ 				.withTexture("Sampler0", texture)
+//$$ 				.useLightmap()
+//$$ 				.createRenderSetup());
 //$$ 	}
-//$$ 
-//$$ 	SlideRenderType(ResourceLocation texture) {
-//$$ 		this.delegate = null;
+//$$
+//$$ 	public RenderType asRenderType() {
+//$$ 		return this.delegate;
+//$$ 	}
+//$$
+//$$ 	private static Identifier registerTexture(GpuTexture texture, GpuSampler sampler) {
+//$$ 		Identifier location = Identifier.fromNamespaceAndPath(Slideshow.ID, "textures/generated/" + sTextureIndex++);
+//$$ 		Minecraft.getInstance().getTextureManager().register(location, new SlideAbstractTexture(texture, sampler));
+//$$ 		return location;
+//$$ 	}
+//$$
+//$$ 	private static int sTextureIndex;
+//$$
+//$$ 	private static final class SlideAbstractTexture extends AbstractTexture {
+//$$ 		private SlideAbstractTexture(GpuTexture texture, GpuSampler sampler) {
+//$$ 			this.texture = texture;
+//$$ 			this.textureView = RenderSystem.getDevice().createTextureView(texture);
+//$$ 			this.sampler = sampler;
+//$$ 		}
 //$$ 	}
 //$$ }
 //#elseif MC >= 12108

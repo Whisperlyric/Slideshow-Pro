@@ -21,8 +21,8 @@ preprocess {
 	def mc1218  = createNode('1.21.8', 1_21_08, '')
 	def mc12110 = createNode('1.21.10', 1_21_10, '')
 	def mc12111 = createNode('1.21.11', 1_21_11, '')
-	def mc260102 = createNode('26.1.2', 26_01_02, '')
-	def mc260200 = createNode('26.2', 26_02_00, '')
+//	def mc260102 = createNode('26.1.2', 26_01_02, '')
+//	def mc260200 = createNode('26.2', 26_02_00, '')
 
 	mc1211.link(mc1213, file('versions/mapping-1.21.1-1.21.3.txt'))
 	mc1213.link(mc1214, file('versions/mapping-1.21.3-1.21.4.txt'))
@@ -30,8 +30,8 @@ preprocess {
 	mc1215.link(mc1218, file('versions/mapping-1.21.5-1.21.8.txt'))
 	mc1218.link(mc12110, file('versions/mapping-1.21.8-1.21.10.txt'))
 	mc12110.link(mc12111, file('versions/mapping-1.21.10-1.21.11.txt'))
-	mc12111.link(mc260102, file('versions/mapping-1.21.11-26.1.2.txt'))
-	mc260102.link(mc260200, file('versions/mapping-26.1.2-26.2.txt'))
+//	mc12111.link(mc260102, file('versions/mapping-1.21.11-26.1.2.txt'))
+//	mc260102.link(mc260200, file('versions/mapping-26.1.2-26.2.txt'))
 
 	for (final def node in getNodes()) {
 		findProject(node.project).ext.mcVersion = node.mcVersion
@@ -63,6 +63,6 @@ tasks.register('buildAndGather') {
 	}
 }
 
-tasks.withType(JavaCompile) {
-	options.compilerArgs << '-Xlint:-processing'
+tasks.withType(JavaCompile).configureEach {
+    options.compilerArgs << '-Xlint:-processing'
 }

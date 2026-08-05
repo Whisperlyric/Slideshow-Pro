@@ -7,6 +7,10 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Direction.Plane;
 import net.minecraft.server.level.ServerPlayer;
+//#if MC >= 12111
+//$$ import net.minecraft.server.permissions.Permission.HasCommandLevel;
+//$$ import net.minecraft.server.permissions.PermissionLevel;
+//#endif
 import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.MenuProvider;
@@ -157,7 +161,11 @@ public final class ProjectorBlock extends BaseEntityBlock implements EntityBlock
 
    public static boolean hasProjectorPermission(ServerPlayer serverPlayer) {
       return (!ServerConfig.isProjectorRequiresCreative() || serverPlayer.isCreative())
+//#if MC >= 12111
+         //$$ && serverPlayer.permissions().hasPermission(new HasCommandLevel(PermissionLevel.byId(ServerConfig.getProjectorPermission())));
+//#else
          && serverPlayer.hasPermissions(ServerConfig.getProjectorPermission());
+//#endif
    }
 
    protected MapCodec<? extends BaseEntityBlock> codec() {

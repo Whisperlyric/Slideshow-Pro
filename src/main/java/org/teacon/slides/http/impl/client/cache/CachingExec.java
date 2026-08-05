@@ -669,7 +669,7 @@ public class CachingExec implements ClientExecChain {
             } else {
                Date entryDate = DateUtils.parseDate(entryDateHeader.getValue());
                Date responseDate = DateUtils.parseDate(responseDateHeader.getValue());
-               return entryDate != null && responseDate != null ? responseDate.before(entryDate) : false;
+               return entryDate != null && responseDate != null && responseDate.before(entryDate);
             }
          }
       }

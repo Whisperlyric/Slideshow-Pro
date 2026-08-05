@@ -45,7 +45,7 @@ class CachedResponseSuitabilityChecker {
          return false;
       } else {
          long maxstale = this.getMaxStale(request);
-         return maxstale == -1L ? false : maxstale > this.validityStrategy.getStalenessSecs(entry, now);
+         return maxstale != -1L && maxstale > this.validityStrategy.getStalenessSecs(entry, now);
       }
    }
 

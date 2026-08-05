@@ -131,26 +131,22 @@ class CacheKeyGenerator {
       Collections.sort(variantHeaderNames);
 
       StringBuilder buf;
-      try {
-         buf = new StringBuilder("{");
-         boolean first = true;
+       buf = new StringBuilder("{");
+       boolean first = true;
 
-         for (String headerName : variantHeaderNames) {
-            if (!first) {
-               buf.append("&");
-            }
+       for (String headerName : variantHeaderNames) {
+          if (!first) {
+             buf.append("&");
+          }
 
-            buf.append(URLEncoder.encode(headerName, Consts.UTF_8.name()));
-            buf.append("=");
-            buf.append(URLEncoder.encode(this.getFullHeaderValue(req.getHeaders(headerName)), Consts.UTF_8.name()));
-            first = false;
-         }
+          buf.append(URLEncoder.encode(headerName, Consts.UTF_8));
+          buf.append("=");
+          buf.append(URLEncoder.encode(this.getFullHeaderValue(req.getHeaders(headerName)), Consts.UTF_8));
+          first = false;
+       }
 
-         buf.append("}");
-      } catch (UnsupportedEncodingException var12) {
-         throw new RuntimeException("couldn't encode to UTF-8", var12);
-      }
+       buf.append("}");
 
-      return buf.toString();
+       return buf.toString();
    }
 }

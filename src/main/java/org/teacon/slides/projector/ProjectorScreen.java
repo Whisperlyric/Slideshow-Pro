@@ -723,7 +723,11 @@ public final class ProjectorScreen extends AbstractContainerScreen<ProjectorScre
          this.texture = texture;
       }
 
+//#if MC >= 12111
+      //$$ protected void renderContents(GuiGraphics context, int mouseX, int mouseY, float delta) {
+//#else
       public void renderWidget(GuiGraphics context, int mouseX, int mouseY, float delta) {
+//#endif
 //#if MC >= 12108
          //$$ context.blit(
             //$$ RenderPipelines.GUI_TEXTURED, this.texture, this.getX(), this.getY(), (float)this.u, (float)this.v, this.width, this.height, 256, 256

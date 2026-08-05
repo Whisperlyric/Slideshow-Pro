@@ -98,14 +98,9 @@ class BasicHttpCache implements HttpCache {
       String parentURI = this.uriExtractor.getURI(target, req);
       final String variantURI = this.uriExtractor.getVariantURI(target, req, entry);
       this.storage.putEntry(variantURI, entry);
-      HttpCacheUpdateCallback callback = new HttpCacheUpdateCallback() {
-         @Override
-         public HttpCacheEntry update(HttpCacheEntry existing) throws IOException {
-            return BasicHttpCache.this.doGetUpdatedParentEntry(
-               req.getRequestLine().getUri(), existing, entry, BasicHttpCache.this.uriExtractor.getVariantKey(req, entry), variantURI
-            );
-         }
-      };
+      HttpCacheUpdateCallback callback = existing -> BasicHttpCache.this.doGetUpdatedParentEntry(
+         req.getRequestLine().getUri(), existing, entry, BasicHttpCache.this.uriExtractor.getVariantKey(req, entry), variantURI
+      );
 
       try {
          this.storage.updateEntry(parentURI, callback);
@@ -120,12 +115,7 @@ class BasicHttpCache implements HttpCache {
       final HttpCacheEntry entry = variant.getEntry();
       final String variantKey = this.uriExtractor.getVariantKey(req, entry);
       final String variantCacheKey = variant.getCacheKey();
-      HttpCacheUpdateCallback callback = new HttpCacheUpdateCallback() {
-         @Override
-         public HttpCacheEntry update(HttpCacheEntry existing) throws IOException {
-            return BasicHttpCache.this.doGetUpdatedParentEntry(req.getRequestLine().getUri(), existing, entry, variantKey, variantCacheKey);
-         }
-      };
+      HttpCacheUpdateCallback callback = existing -> BasicHttpCache.this.doGetUpdatedParentEntry(req.getRequestLine().getUri(), existing, entry, variantKey, variantCacheKey);
 
       try {
          this.storage.updateEntry(parentCacheKey, callback);
@@ -150,7 +140,7 @@ class BasicHttpCache implements HttpCache {
                return false;
             }
 
-            return resource == null ? false : resource.length() < (long)contentLength;
+            return resource != null && resource.length() < (long) contentLength;
          }
       }
    }

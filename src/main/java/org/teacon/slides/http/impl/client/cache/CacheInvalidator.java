@@ -1,8 +1,7 @@
 package org.teacon.slides.http.impl.client.cache;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
+import java.net.URI;
 import java.util.Date;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -44,7 +43,7 @@ class CacheInvalidator implements HttpCacheInvalidator {
             this.flushEntry(theUri);
          }
 
-         URL reqURL = this.getAbsoluteURL(theUri);
+         URI reqURL = this.getAbsoluteURL(theUri);
          if (reqURL == null) {
             this.log.error("Couldn't transform request into valid URL");
             return;
@@ -94,24 +93,24 @@ class CacheInvalidator implements HttpCacheInvalidator {
       }
    }
 
-   protected void flushUriIfSameHost(URL requestURL, URL targetURL) {
-      URL canonicalTarget = this.getAbsoluteURL(this.cacheKeyGenerator.canonicalizeUri(targetURL.toString()));
-      if (canonicalTarget != null) {
+   protected void flushUriIfSameHost(URI requestURL, URI targetURL) {
+      URI canonicalTarget = this.getAbsoluteURL(this.cacheKeyGenerator.canonicalizeUri(targetURL.toString()));
+      if (canonicalTarget != null && requestURL.getAuthority() != null && canonicalTarget.getAuthority() != null) {
          if (canonicalTarget.getAuthority().equalsIgnoreCase(requestURL.getAuthority())) {
             this.flushEntry(canonicalTarget.toString());
          }
       }
    }
 
-   protected void flushRelativeUriFromSameHost(URL reqURL, String relUri) {
-      URL relURL = this.getRelativeURL(reqURL, relUri);
+   protected void flushRelativeUriFromSameHost(URI reqURL, String relUri) {
+      URI relURL = this.getRelativeURL(reqURL, relUri);
       if (relURL != null) {
          this.flushUriIfSameHost(reqURL, relURL);
       }
    }
 
-   protected boolean flushAbsoluteUriFromSameHost(URL reqURL, String uri) {
-      URL absURL = this.getAbsoluteURL(uri);
+   protected boolean flushAbsoluteUriFromSameHost(URI reqURL, String uri) {
+      URI absURL = this.getAbsoluteURL(uri);
       if (absURL == null) {
          return false;
       } else {
@@ -120,23 +119,26 @@ class CacheInvalidator implements HttpCacheInvalidator {
       }
    }
 
-   private URL getAbsoluteURL(String uri) {
-      URL absURL = null;
+   private URI getAbsoluteURL(String uri) {
+      URI absURL = null;
 
       try {
-         absURL = new URL(uri);
-      } catch (MalformedURLException var4) {
+         URI parsed = URI.create(uri);
+         if (parsed.isAbsolute()) {
+            absURL = parsed;
+         }
+      } catch (IllegalArgumentException var5) {
       }
 
       return absURL;
    }
 
-   private URL getRelativeURL(URL reqURL, String relUri) {
-      URL relURL = null;
+   private URI getRelativeURL(URI reqURL, String relUri) {
+      URI relURL = null;
 
       try {
-         relURL = new URL(reqURL, relUri);
-      } catch (MalformedURLException var5) {
+         relURL = reqURL.resolve(relUri);
+      } catch (IllegalArgumentException var6) {
       }
 
       return relURL;
@@ -155,14 +157,14 @@ class CacheInvalidator implements HttpCacheInvalidator {
    public void flushInvalidatedCacheEntries(HttpHost host, HttpRequest request, HttpResponse response) {
       int status = response.getStatusLine().getStatusCode();
       if (status >= 200 && status <= 299) {
-         URL reqURL = this.getAbsoluteURL(this.cacheKeyGenerator.getURI(host, request));
+         URI reqURL = this.getAbsoluteURL(this.cacheKeyGenerator.getURI(host, request));
          if (reqURL != null) {
-            URL contentLocation = this.getContentLocationURL(reqURL, response);
+            URI contentLocation = this.getContentLocationURL(reqURL, response);
             if (contentLocation != null) {
                this.flushLocationCacheEntry(reqURL, response, contentLocation);
             }
 
-            URL location = this.getLocationURL(reqURL, response);
+            URI location = this.getLocationURL(reqURL, response);
             if (location != null) {
                this.flushLocationCacheEntry(reqURL, response, location);
             }
@@ -170,7 +172,7 @@ class CacheInvalidator implements HttpCacheInvalidator {
       }
    }
 
-   private void flushLocationCacheEntry(URL reqURL, HttpResponse response, URL location) {
+   private void flushLocationCacheEntry(URI reqURL, HttpResponse response, URI location) {
       String cacheKey = this.cacheKeyGenerator.canonicalizeUri(location.toString());
       HttpCacheEntry entry = this.getEntry(cacheKey);
       if (entry != null) {
@@ -182,24 +184,24 @@ class CacheInvalidator implements HttpCacheInvalidator {
       }
    }
 
-   private URL getContentLocationURL(URL reqURL, HttpResponse response) {
+   private URI getContentLocationURL(URI reqURL, HttpResponse response) {
       Header clHeader = response.getFirstHeader("Content-Location");
       if (clHeader == null) {
          return null;
       } else {
          String contentLocation = clHeader.getValue();
-         URL canonURL = this.getAbsoluteURL(contentLocation);
+         URI canonURL = this.getAbsoluteURL(contentLocation);
          return canonURL != null ? canonURL : this.getRelativeURL(reqURL, contentLocation);
       }
    }
 
-   private URL getLocationURL(URL reqURL, HttpResponse response) {
+   private URI getLocationURL(URI reqURL, HttpResponse response) {
       Header clHeader = response.getFirstHeader("Location");
       if (clHeader == null) {
          return null;
       } else {
          String location = clHeader.getValue();
-         URL canonURL = this.getAbsoluteURL(location);
+         URI canonURL = this.getAbsoluteURL(location);
          return canonURL != null ? canonURL : this.getRelativeURL(reqURL, location);
       }
    }
@@ -207,7 +209,7 @@ class CacheInvalidator implements HttpCacheInvalidator {
    private boolean responseAndEntryEtagsDiffer(HttpResponse response, HttpCacheEntry entry) {
       Header entryEtag = entry.getFirstHeader("ETag");
       Header responseEtag = response.getFirstHeader("ETag");
-      return entryEtag != null && responseEtag != null ? !entryEtag.getValue().equals(responseEtag.getValue()) : false;
+      return entryEtag != null && responseEtag != null && !entryEtag.getValue().equals(responseEtag.getValue());
    }
 
    private boolean responseDateOlderThanEntryDate(HttpResponse response, HttpCacheEntry entry) {
@@ -216,7 +218,7 @@ class CacheInvalidator implements HttpCacheInvalidator {
       if (entryDateHeader != null && responseDateHeader != null) {
          Date entryDate = DateUtils.parseDate(entryDateHeader.getValue());
          Date responseDate = DateUtils.parseDate(responseDateHeader.getValue());
-         return entryDate != null && responseDate != null ? responseDate.before(entryDate) : false;
+         return entryDate != null && responseDate != null && responseDate.before(entryDate);
       } else {
          return false;
       }

@@ -40,6 +40,12 @@ dependencies {
     // Apache HttpClient used by the bundled HTTP cache implementation (bundled by Minecraft itself before 1.21.11)
     implementation 'org.apache.httpcomponents:httpclient:4.5.14'
     implementation 'org.apache.httpcomponents:httpcore:4.4.16'
+    if (mcVersion >= 1_21_11) {
+        include 'org.apache.httpcomponents:httpclient:4.5.14'
+        include 'org.apache.httpcomponents:httpcore:4.4.16'
+        include 'commons-codec:commons-codec:1.11'
+        include 'commons-logging:commons-logging:1.2'
+    }
 }
 
 JavaVersion JAVA_COMPATIBILITY = JavaVersion.VERSION_21
@@ -50,8 +56,13 @@ java {
     targetCompatibility = JAVA_COMPATIBILITY
 }
 
+sourceSets.main.resources {
+    srcDir "src/main/resources"
+}
+
 tasks.withType(JavaCompile).configureEach {
     options.encoding = "UTF-8"
+    // options.compilerArgs += ["-Xlint:deprecation"]
 }
 
 jar {

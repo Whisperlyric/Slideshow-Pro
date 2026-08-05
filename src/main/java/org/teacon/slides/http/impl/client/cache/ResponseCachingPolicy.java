@@ -90,7 +90,7 @@ class ResponseCachingPolicy {
                         }
                      }
 
-                     return this.isExplicitlyNonCacheable(response) ? false : cacheable || this.isExplicitlyCacheable(response);
+                     return !this.isExplicitlyNonCacheable(response) && (cacheable || this.isExplicitlyCacheable(response));
                   }
                }
             }
@@ -106,7 +106,7 @@ class ResponseCachingPolicy {
       } else if (status >= 300 && status <= 307) {
          return false;
       } else {
-         return status >= 400 && status <= 417 ? false : status < 500 || status > 505;
+         return (status < 400 || status > 417) && (status < 500 || status > 505);
       }
    }
 
@@ -196,7 +196,7 @@ class ResponseCachingPolicy {
          if (expiresHdr != null && dateHdr != null) {
             Date expires = DateUtils.parseDate(expiresHdr.getValue());
             Date date = DateUtils.parseDate(dateHdr.getValue());
-            return expires != null && date != null ? expires.equals(date) || expires.before(date) : false;
+            return expires != null && date != null && (expires.equals(date) || expires.before(date));
          } else {
             return false;
          }

@@ -9,12 +9,13 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.NotNull;
 import org.teacon.slides.Slideshow;
 import org.teacon.slides.projector.ProjectorBlock;
 import org.teacon.slides.util.Utilities;
 
 public class ProjectorExportC2SPayload implements CustomPacketPayload {
-   public static final Type<ProjectorExportC2SPayload> ID = new Type(Slideshow.PACKET_EXPORT);
+   public static final Type<ProjectorExportC2SPayload> ID = new Type<>(Slideshow.PACKET_EXPORT);
    private final boolean mFromID;
    private final String mLocation;
 
@@ -80,7 +81,7 @@ public class ProjectorExportC2SPayload implements CustomPacketPayload {
       }
    }
 
-   public Type<ProjectorExportC2SPayload> type() {
+   public @NotNull Type<ProjectorExportC2SPayload> type() {
       return ID;
    }
 }

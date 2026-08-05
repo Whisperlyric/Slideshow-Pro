@@ -5,9 +5,8 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URI;
-import java.net.URL;
+import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -27,7 +26,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.MarkerManager;
-import org.jetbrains.annotations.Nullable;
 import org.teacon.slides.Slideshow;
 import org.teacon.slides.http.client.cache.HttpCacheEntry;
 import org.teacon.slides.http.client.cache.Resource;
@@ -38,7 +36,7 @@ final class LegacyStorage {
    private static final Marker MARKER = MarkerManager.getMarker("Downloader");
    private static final Path LOCAL_CACHE_MAP_JSON_PATH = Paths.get("map.json");
    private static final Gson GSON = new GsonBuilder().disableHtmlEscaping().setPrettyPrinting().create();
-   private static final TypeToken<Map<String, String>> LOCAL_CACHE_MAP_TYPE = new TypeToken<Map<String, String>>() {
+   private static final TypeToken<Map<String, String>> LOCAL_CACHE_MAP_TYPE = new TypeToken<>() {
    };
 
    static boolean loadLegacy(Path parentPath, Map<String, Pair<Path, HttpCacheEntry>> map) {
@@ -80,20 +78,14 @@ final class LegacyStorage {
    private static String normalizeUri(String uriString) {
       try {
          URI uri = URI.create(uriString);
-         URL url = new URL(uri.toASCIIString());
-         String protocol = url.getProtocol();
-         String hostname = url.getHost();
-         String path = url.getPath();
-         String query = url.getQuery();
-         String file = normalizeFile(path, query);
-         return new URL(protocol, hostname, normalizePort(url.getPort(), protocol), file).toString();
-      } catch (MalformedURLException | IllegalArgumentException var8) {
+         if (uri.getScheme() == null || uri.getHost() == null) {
+            return uriString;
+         }
+         int port = normalizePort(uri.getPort(), uri.getScheme());
+         return new URI(uri.getScheme(), null, uri.getHost(), port, uri.getPath(), uri.getQuery(), null).toASCIIString();
+      } catch (IllegalArgumentException | URISyntaxException var8) {
          return uriString;
       }
-   }
-
-   private static String normalizeFile(String path, @Nullable String query) {
-      return query == null ? path : path + "?" + query;
    }
 
    private static int normalizePort(int port, String protocol) {

@@ -8,6 +8,9 @@ import com.mojang.blaze3d.systems.RenderSystem;
 //$$ import com.mojang.blaze3d.textures.GpuTexture;
 //$$ import com.mojang.blaze3d.textures.TextureFormat;
 //#endif
+//#if MC >= 12111
+//$$ import com.mojang.blaze3d.textures.GpuSampler;
+//#endif
 import org.jetbrains.annotations.NotNull;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GL46C;
@@ -55,8 +58,13 @@ public final class AnimatedTextureProvider implements TextureProvider {
 //#if MC >= 12108
 //$$ 			mTexture = RenderSystem.getDevice().createTexture("slide_show_animated",
 //$$ 					GpuTexture.USAGE_TEXTURE_BINDING | GpuTexture.USAGE_COPY_DST, TextureFormat.RGBA8, width, height, 1, 1);
+//#if MC >= 12111
+//$$ 			GpuSampler sampler = RenderSystem.getSamplerCache().getSampler(
+//$$ 					AddressMode.CLAMP_TO_EDGE, AddressMode.CLAMP_TO_EDGE, FilterMode.NEAREST, FilterMode.LINEAR, false);
+//#else
 //$$ 			mTexture.setAddressMode(AddressMode.CLAMP_TO_EDGE);
 //$$ 			mTexture.setTextureFilter(FilterMode.NEAREST, FilterMode.LINEAR, false);
+//#endif
 //#if MC >= 12110
 //$$ 			RenderSystem.getDevice().createCommandEncoder().writeToTexture(
 //$$ 					mTexture, buffer.rewind(), NativeImage.Format.RGBA, 0, 0, 0, 0, width, height);
@@ -71,7 +79,11 @@ public final class AnimatedTextureProvider implements TextureProvider {
 //$$ 			RenderSystem.getDevice().createCommandEncoder().writeToTexture(
 //$$ 					mTexture, buffer.rewind().asIntBuffer(), NativeImage.Format.RGBA, 0, 0, 0, width, height);
 //#endif
+//#if MC >= 12111
+//$$ 			mRenderType = new SlideRenderType(mTexture, sampler);
+//#else
 //$$ 			mRenderType = new SlideRenderType(mTexture);
+//#endif
 //$$ 		} catch (Throwable t) {
 //$$ 			close();
 //$$ 			throw new CompletionException(t);

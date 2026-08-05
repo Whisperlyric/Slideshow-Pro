@@ -27,6 +27,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.HopperBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix3f;
 import org.joml.Matrix4f;
@@ -370,7 +371,7 @@ public final class ProjectorBlockEntity extends BlockEntity implements ExtendedS
       return s.isEmpty() ? 0 : Integer.parseInt(s);
    }
 
-   public CompoundTag getUpdateTag(Provider registries) {
+   public @NotNull CompoundTag getUpdateTag(Provider registries) {
 //#if MC >= 12108
       //$$ return super.saveWithFullMetadata(registries);
 //#else
@@ -386,12 +387,11 @@ public final class ProjectorBlockEntity extends BlockEntity implements ExtendedS
    }
 //#endif
 
-   public Component getDisplayName() {
+   public @NotNull Component getDisplayName() {
       return Component.literal("");
    }
 
-   @Nullable
-   public AbstractContainerMenu createMenu(int syncId, Inventory playerInventory, Player player) {
+   public @NotNull AbstractContainerMenu createMenu(int syncId, Inventory playerInventory, Player player) {
       return new ProjectorScreenHandler(syncId, new ProjectorOpenScreenPayload(this.worldPosition));
    }
 
@@ -399,8 +399,7 @@ public final class ProjectorBlockEntity extends BlockEntity implements ExtendedS
       return new ProjectorOpenScreenPayload(this.worldPosition);
    }
 
-   @Nullable
-   public Packet<ClientGamePacketListener> getUpdatePacket() {
+   public @NotNull Packet<ClientGamePacketListener> getUpdatePacket() {
       return ClientboundBlockEntityDataPacket.create(this);
    }
 }

@@ -1,9 +1,7 @@
 package org.teacon.slides.http.impl.client.cache;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
+
 import org.apache.http.annotation.Contract;
 import org.apache.http.annotation.ThreadingBehavior;
 import org.teacon.slides.http.client.cache.Resource;
@@ -12,6 +10,7 @@ import org.teacon.slides.http.client.cache.Resource;
    threading = ThreadingBehavior.SAFE
 )
 public class FileResource implements Resource {
+   @Serial
    private static final long serialVersionUID = 4132244415919043397L;
    private final File file;
    private volatile boolean disposed;

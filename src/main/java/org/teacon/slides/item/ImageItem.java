@@ -21,6 +21,7 @@ import net.minecraft.world.item.TooltipFlag;
 //$$ import net.minecraft.world.item.component.TooltipDisplay;
 //#endif
 import net.minecraft.world.level.Level;
+import org.jetbrains.annotations.NotNull;
 import org.teacon.slides.Slideshow;
 import org.teacon.slides.util.ClientUtilities;
 
@@ -30,6 +31,7 @@ public class ImageItem extends Item {
    }
 
 //#if MC >= 12105
+   //$$ @SuppressWarnings("deprecation")
    //$$ public void appendHoverText(ItemStack stack, Item.TooltipContext context, TooltipDisplay display, Consumer<Component> tooltip, TooltipFlag type) {
       //$$ String location = (String)stack.get(Slideshow.LOCATION_COMPONENT);
       //$$ if (location == null) {
@@ -80,7 +82,7 @@ public class ImageItem extends Item {
       //$$ }
    //$$ }
 //#else
-   public InteractionResultHolder<ItemStack> use(Level world, Player user, InteractionHand hand) {
+   public @NotNull InteractionResultHolder<ItemStack> use(Level world, Player user, InteractionHand hand) {
       if (!world.isClientSide) {
          return InteractionResultHolder.success(user.getItemInHand(hand));
       } else {

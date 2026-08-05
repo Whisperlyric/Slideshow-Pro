@@ -4,6 +4,10 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
+//#if MC >= 12111
+//$$ import net.minecraft.server.permissions.Permission.HasCommandLevel;
+//$$ import net.minecraft.server.permissions.PermissionLevel;
+//#endif
 import net.minecraft.commands.arguments.ResourceLocationArgument;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
@@ -15,7 +19,11 @@ public class ImageCommand {
    public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
       dispatcher.register(
          (LiteralArgumentBuilder)((LiteralArgumentBuilder)((LiteralArgumentBuilder)Commands.literal("image")
+//#if MC >= 12111
+                  //$$ .requires(source -> source.permissions().hasPermission(new HasCommandLevel(PermissionLevel.byId(ServerConfig.getCommandsPermission()))) && source.getEntity() instanceof Player))
+//#else
                   .requires(source -> source.hasPermission(ServerConfig.getCommandsPermission()) && source.getEntity() instanceof Player))
+//#endif
                .then(
                   Commands.literal("id")
                      .then(

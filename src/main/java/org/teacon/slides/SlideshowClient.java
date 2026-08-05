@@ -1,8 +1,14 @@
 package org.teacon.slides;
 
 import net.fabricmc.api.ClientModInitializer;
+//#if MC >= 12111
+//$$ import net.fabricmc.fabric.api.resource.v1.ResourceLoader;
+//$$ import net.minecraft.resources.Identifier;
+//$$ import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
+//#else
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.fabricmc.fabric.api.resource.SimpleSynchronousResourceReloadListener;
+//#endif
 import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.client.renderer.RenderType;
 //#if MC >= 12108
@@ -38,6 +44,14 @@ public class SlideshowClient implements ClientModInitializer {
       RegistryClient.registerClientStoppingEvent(SlideState::onPlayerLeft);
       RegistryClient.registerNetworkReceiver(ProjectorImageInfoS2CPayload.ID, ProjectorImageInfoS2CPayload::handle);
       MenuScreens.register(Slideshow.PROJECTOR_SCREEN_HANDLER, ProjectorScreen::new);
+//#if MC >= 12111
+      //$$ ResourceLoader.get(PackType.CLIENT_RESOURCES).registerReloader(Identifier.fromNamespaceAndPath("slide_show", "client_reload"), new ResourceManagerReloadListener() {
+         //$$ public void onResourceManagerReload(ResourceManager resourceManager) {
+            //$$ SlideState.clearCacheID();
+            //$$ Config.refreshProperties();
+         //$$ }
+      //$$ });
+//#else
       ResourceManagerHelper.get(PackType.CLIENT_RESOURCES).registerReloadListener(new SimpleSynchronousResourceReloadListener() {
          private final ResourceLocation id = ResourceLocation.fromNamespaceAndPath("slide_show", "client_reload");
 
@@ -50,6 +64,7 @@ public class SlideshowClient implements ClientModInitializer {
             return this.id;
          }
       });
+//#endif
       WebPDecoder.init();
    }
 }

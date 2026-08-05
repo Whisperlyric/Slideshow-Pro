@@ -1,10 +1,12 @@
 package org.teacon.slides.http.impl.client.cache;
 
+import java.io.Serial;
 import java.util.LinkedHashMap;
 import java.util.Map.Entry;
 import org.teacon.slides.http.client.cache.HttpCacheEntry;
 
 final class CacheMap extends LinkedHashMap<String, HttpCacheEntry> {
+   @Serial
    private static final long serialVersionUID = -7750025207539768511L;
    private final int maxEntries;
 

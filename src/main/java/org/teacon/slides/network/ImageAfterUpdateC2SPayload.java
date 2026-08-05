@@ -6,6 +6,7 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.NotNull;
 import org.teacon.slides.Slideshow;
 import org.teacon.slides.util.Utilities;
 
@@ -44,7 +45,7 @@ public class ImageAfterUpdateC2SPayload implements CustomPacketPayload {
       }
    }
 
-   public Type<ImageAfterUpdateC2SPayload> type() {
+   public @NotNull Type<ImageAfterUpdateC2SPayload> type() {
       return ID;
    }
 }

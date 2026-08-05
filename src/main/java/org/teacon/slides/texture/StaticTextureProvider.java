@@ -10,6 +10,12 @@ import com.mojang.blaze3d.systems.RenderSystem;
 //$$ import com.mojang.blaze3d.textures.TextureFormat;
 //$$ import net.minecraft.client.renderer.texture.MipmapGenerator;
 //#endif
+//#if MC >= 12111
+//$$ import com.mojang.blaze3d.textures.GpuSampler;
+//$$ import net.minecraft.client.renderer.texture.MipmapStrategy;
+//$$ import net.minecraft.resources.Identifier;
+//$$ import org.teacon.slides.Slideshow;
+//#endif
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.stb.STBImage;
@@ -51,9 +57,17 @@ public final class StaticTextureProvider implements TextureProvider {
 //#if MC >= 12108
 //$$ 			mTexture = RenderSystem.getDevice().createTexture("slide_show_static",
 //$$ 					GpuTexture.USAGE_TEXTURE_BINDING | GpuTexture.USAGE_COPY_DST, TextureFormat.RGBA8, mWidth, mHeight, 1, maxLevel + 1);
+//#if MC >= 12111
+//$$ 			GpuSampler sampler = RenderSystem.getSamplerCache().getSampler(
+//$$ 					AddressMode.CLAMP_TO_EDGE, AddressMode.CLAMP_TO_EDGE, FilterMode.NEAREST, FilterMode.LINEAR, true);
+//$$ 			NativeImage[] levels = MipmapGenerator.generateMipLevels(
+//$$ 					Identifier.fromNamespaceAndPath(Slideshow.ID, "textures/generated/slide_show_static"),
+//$$ 					new NativeImage[]{image}, maxLevel, MipmapStrategy.AUTO, 0.5F);
+//#else
 //$$ 			mTexture.setAddressMode(AddressMode.CLAMP_TO_EDGE);
 //$$ 			mTexture.setTextureFilter(FilterMode.NEAREST, FilterMode.LINEAR, true);
 //$$ 			NativeImage[] levels = MipmapGenerator.generateMipLevels(new NativeImage[]{image}, maxLevel);
+//#endif
 //$$ 			CommandEncoder encoder = RenderSystem.getDevice().createCommandEncoder();
 //$$ 			for (int level = 0; level <= maxLevel; ++level) {
 //$$ 				encoder.writeToTexture(mTexture, levels[level], level, 0, 0, 0,
@@ -62,7 +76,11 @@ public final class StaticTextureProvider implements TextureProvider {
 //$$ 			for (int level = 1; level <= maxLevel; ++level) {
 //$$ 				levels[level].close();
 //$$ 			}
+//#if MC >= 12111
+//$$ 			mRenderType = new SlideRenderType(mTexture, sampler);
+//#else
 //$$ 			mRenderType = new SlideRenderType(mTexture);
+//#endif
 //#elseif MC >= 12105
 //$$ 			mTexture = RenderSystem.getDevice().createTexture("slide_show_static", TextureFormat.RGBA8, mWidth, mHeight, maxLevel + 1);
 //$$ 			mTexture.setAddressMode(AddressMode.CLAMP_TO_EDGE);
