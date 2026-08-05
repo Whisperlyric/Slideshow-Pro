@@ -70,7 +70,7 @@ public class ImageSourceScreen extends Screen {
             this.invalidLocation = false;
          }
 
-         this.locationInput.setTextColor(this.invalidLocation ? 14699339 : 14737632);
+         this.locationInput.setTextColor(this.invalidLocation ? 0xFFE0494B : 0xFFE0E0E0);
          this.location = text;
       });
       this.locationInput.setValue(this.location);
@@ -95,8 +95,7 @@ public class ImageSourceScreen extends Screen {
    //$$ public void extractRenderState(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
       //$$ try (Lighting lighting = new Lighting()) {
          //$$ lighting.setupFor(Lighting.Entry.ITEMS_FLAT);
-         //$$ this.extractBackground(context, mouseX, mouseY, delta);
-         //$$ context.centeredText(this.font, this.title, this.width / 2, 40, 16777215);
+         //$$ context.centeredText(this.font, this.title, this.width / 2, 40, 0xFFFFFFFF);
          //$$ lighting.setupFor(Lighting.Entry.ITEMS_3D);
          //$$ super.extractRenderState(context, mouseX, mouseY, delta);
       //$$ }
@@ -105,8 +104,7 @@ public class ImageSourceScreen extends Screen {
    //$$ public void render(GuiGraphics context, int mouseX, int mouseY, float delta) {
       //$$ try (Lighting lighting = new Lighting()) {
          //$$ lighting.setupFor(Lighting.Entry.ITEMS_FLAT);
-         //$$ this.renderBackground(context, mouseX, mouseY, delta);
-         //$$ context.drawCenteredString(this.font, this.title, this.width / 2, 40, 16777215);
+         //$$ context.drawCenteredString(this.font, this.title, this.width / 2, 40, 0xFFFFFFFF);
          //$$ lighting.setupFor(Lighting.Entry.ITEMS_3D);
          //$$ super.render(context, mouseX, mouseY, delta);
       //$$ }
@@ -115,7 +113,7 @@ public class ImageSourceScreen extends Screen {
    public void render(GuiGraphics context, int mouseX, int mouseY, float delta) {
       Lighting.setupForFlatItems();
       this.renderBackground(context, mouseX, mouseY, delta);
-      context.drawCenteredString(this.font, this.title, this.width / 2, 40, 16777215);
+      context.drawCenteredString(this.font, this.title, this.width / 2, 40, 0xFFFFFFFF);
       Lighting.setupFor3DItems();
       super.render(context, mouseX, mouseY, delta);
    }

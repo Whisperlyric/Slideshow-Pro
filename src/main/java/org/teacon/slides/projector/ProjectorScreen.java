@@ -164,7 +164,7 @@ public final class ProjectorScreen extends AbstractContainerScreen<ProjectorScre
                this.mInvalidURL = false;
             }
 
-            this.mURLInput.setTextColor(this.mInvalidURL ? 14699339 : 14737632);
+            this.mURLInput.setTextColor(this.mInvalidURL ? 0xFFE0494B : 0xFFE0E0E0);
          });
          this.mURLInput.setValue(this.mEntity.mLocation);
          this.addRenderableWidget(this.mURLInput);
@@ -183,7 +183,7 @@ public final class ProjectorScreen extends AbstractContainerScreen<ProjectorScre
             }
          });
          this.mColorInput.setValue(String.format("%08X", this.mEntity.mColor));
-         this.mColorInput.setTextColor(14737632);
+         this.mColorInput.setTextColor(0xFFE0E0E0);
          this.addRenderableWidget(this.mColorInput);
          this.mLastScreen = new ProjectorScreen.ScreenTexturedButtonWidget(
             leftPos + 9, topPos + 55, 9, 9, 201, 33, GUI_TEXTURE, button -> this.switchToScreen(this.propIndex - 1)
@@ -228,10 +228,10 @@ public final class ProjectorScreen extends AbstractContainerScreen<ProjectorScre
                   this.mInvalidWidth = true;
                }
 
-               this.mWidthInput.setTextColor(this.mInvalidWidth ? 14699339 : 14737632);
+               this.mWidthInput.setTextColor(this.mInvalidWidth ? 0xFFE0494B : 0xFFE0E0E0);
             } else {
                this.mInvalidWidth = false;
-               this.mWidthInput.setTextColor(14737632);
+               this.mWidthInput.setTextColor(0xFFE0E0E0);
             }
          });
          this.addRenderableWidget(this.mWidthInput);
@@ -248,10 +248,10 @@ public final class ProjectorScreen extends AbstractContainerScreen<ProjectorScre
                   this.mInvalidHeight = true;
                }
 
-               this.mHeightInput.setTextColor(this.mInvalidHeight ? 14699339 : 14737632);
+               this.mHeightInput.setTextColor(this.mInvalidHeight ? 0xFFE0494B : 0xFFE0E0E0);
             } else {
                this.mInvalidWidth = false;
-               this.mWidthInput.setTextColor(14737632);
+               this.mWidthInput.setTextColor(0xFFE0E0E0);
             }
          });
          this.addRenderableWidget(this.mHeightInput);
@@ -275,7 +275,7 @@ public final class ProjectorScreen extends AbstractContainerScreen<ProjectorScre
                }
             }
          });
-         this.mAngleXInput.setTextColor(14737632);
+         this.mAngleXInput.setTextColor(0xFFE0E0E0);
          this.addRenderableWidget(this.mAngleXInput);
          this.mAngleYInput = new EditBox(this.font, leftPos + 84, topPos + 90, 29, 16, Component.translatable("gui.slide_show.angle_y"));
 //#if MC >= 26_00_00
@@ -297,7 +297,7 @@ public final class ProjectorScreen extends AbstractContainerScreen<ProjectorScre
                }
             }
          });
-         this.mAngleYInput.setTextColor(14737632);
+         this.mAngleYInput.setTextColor(0xFFE0E0E0);
          this.addRenderableWidget(this.mAngleYInput);
          this.mAngleZInput = new EditBox(this.font, leftPos + 138, topPos + 90, 29, 16, Component.translatable("gui.slide_show.angle_z"));
 //#if MC >= 26_00_00
@@ -319,7 +319,7 @@ public final class ProjectorScreen extends AbstractContainerScreen<ProjectorScre
                }
             }
          });
-         this.mAngleZInput.setTextColor(14737632);
+         this.mAngleZInput.setTextColor(0xFFE0E0E0);
          this.addRenderableWidget(this.mAngleZInput);
          this.mOffsetXInput = new EditBox(this.font, leftPos + 30, topPos + 112, 29, 16, Component.translatable("gui.slide_show.offset_x"));
          this.mOffsetXInput.setResponder(input -> {
@@ -333,10 +333,10 @@ public final class ProjectorScreen extends AbstractContainerScreen<ProjectorScre
                   this.mInvalidOffsetX = true;
                }
 
-               this.mOffsetXInput.setTextColor(this.mInvalidOffsetX ? 14699339 : 14737632);
+               this.mOffsetXInput.setTextColor(this.mInvalidOffsetX ? 0xFFE0494B : 0xFFE0E0E0);
             } else {
                this.mInvalidWidth = false;
-               this.mWidthInput.setTextColor(14737632);
+               this.mWidthInput.setTextColor(0xFFE0E0E0);
             }
          });
          this.addRenderableWidget(this.mOffsetXInput);
@@ -352,10 +352,10 @@ public final class ProjectorScreen extends AbstractContainerScreen<ProjectorScre
                   this.mInvalidOffsetY = true;
                }
 
-               this.mOffsetYInput.setTextColor(this.mInvalidOffsetY ? 14699339 : 14737632);
+               this.mOffsetYInput.setTextColor(this.mInvalidOffsetY ? 0xFFE0494B : 0xFFE0E0E0);
             } else {
                this.mInvalidWidth = false;
-               this.mWidthInput.setTextColor(14737632);
+               this.mWidthInput.setTextColor(0xFFE0E0E0);
             }
          });
          this.addRenderableWidget(this.mOffsetYInput);
@@ -371,10 +371,10 @@ public final class ProjectorScreen extends AbstractContainerScreen<ProjectorScre
                   this.mInvalidOffsetZ = true;
                }
 
-               this.mOffsetZInput.setTextColor(this.mInvalidOffsetZ ? 14699339 : 14737632);
+               this.mOffsetZInput.setTextColor(this.mInvalidOffsetZ ? 0xFFE0494B : 0xFFE0E0E0);
             } else {
                this.mInvalidWidth = false;
-               this.mWidthInput.setTextColor(14737632);
+               this.mWidthInput.setTextColor(0xFFE0E0E0);
             }
          });
          this.addRenderableWidget(this.mOffsetZInput);
@@ -598,7 +598,8 @@ public final class ProjectorScreen extends AbstractContainerScreen<ProjectorScre
 //#endif
 
 //#if MC >= 26_00_00
-   //$$ public void extractContents(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
+   //$$ public void extractBackground(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
+      //$$ super.extractBackground(context, mouseX, mouseY, delta);
 //#else
    protected void renderBg(GuiGraphics context, float delta, int mouseX, int mouseY) {
 //#endif
@@ -715,12 +716,16 @@ public final class ProjectorScreen extends AbstractContainerScreen<ProjectorScre
    }
 
 //#if MC >= 26_00_00
-   //$$ private static void renderTooltip(GuiGraphicsExtractor ctx, Font textRenderer, Component text, int mouseX, int mouseY) {
-      //$$ ctx.setTooltipForNextFrame(textRenderer, text, mouseX, mouseY);
+   //$$ private void renderTooltip(GuiGraphicsExtractor ctx, Font textRenderer, Component text, int offsetX, int offsetY) {
+      //$$ ctx.setTooltipForNextFrame(textRenderer, text, offsetX + (this.width - this.imageWidth) / 2, offsetY + (this.height - this.imageHeight) / 2);
+   //$$ }
+//#elseif MC >= 12106
+   //$$ private void renderTooltip(GuiGraphics ctx, Font textRenderer, Component text, int offsetX, int offsetY) {
+      //$$ ctx.setTooltipForNextFrame(textRenderer, text, offsetX + (this.width - this.imageWidth) / 2, offsetY + (this.height - this.imageHeight) / 2);
    //$$ }
 //#else
-   private static void renderTooltip(GuiGraphics ctx, Font textRenderer, Component text, int mouseX, int mouseY) {
-      ctx.renderTooltip(textRenderer, text, mouseX, mouseY);
+   private void renderTooltip(GuiGraphics ctx, Font textRenderer, Component text, int offsetX, int offsetY) {
+      ctx.renderTooltip(textRenderer, text, offsetX, offsetY);
    }
 //#endif
 
