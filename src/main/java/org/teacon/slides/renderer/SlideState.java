@@ -20,7 +20,7 @@ import net.minecraft.resources.ResourceLocation;
 public final class SlideState {
 
 //#if MC >= 12105
-//$$ 	private static final Executor RENDER_EXECUTOR = r -> RenderSystem.queueFencedTask(r::run);
+//$$ 	private static final Executor RENDER_EXECUTOR = r -> Minecraft.getInstance().execute(r::run);
 //#else
 	private static final Executor RENDER_EXECUTOR = r -> RenderSystem.recordRenderCall(r::run);
 //#endif
@@ -143,7 +143,7 @@ public final class SlideState {
 				}
 			}).exceptionally(e -> {
 //#if MC >= 12105
-//$$ 				RenderSystem.queueFencedTask(() -> {
+//$$ 				Minecraft.getInstance().execute(() -> {
 //#else
 				RenderSystem.recordRenderCall(() -> {
 //#endif
@@ -179,7 +179,7 @@ public final class SlideState {
 				}
 			}).exceptionally(e -> {
 //#if MC >= 12105
-//$$ 				RenderSystem.queueFencedTask(() -> {
+//$$ 				Minecraft.getInstance().execute(() -> {
 //#else
 				RenderSystem.recordRenderCall(() -> {
 //#endif
