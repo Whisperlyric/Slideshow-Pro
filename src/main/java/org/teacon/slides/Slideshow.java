@@ -9,11 +9,9 @@ import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents.ServerStarting;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents.ServerStopping;
 //#if MC >= 26_00_00
-//$$ import net.fabricmc.fabric.api.creativetab.v1.CreativeModeTabEvents;
-//$$ import net.fabricmc.fabric.api.creativetab.v1.CreativeModeTabEvents.ModifyOutput;
+//$$ import net.fabricmc.fabric.api.creativetab.v1.FabricCreativeModeTab;
 //#else
-import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
-import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents.ModifyEntries;
+import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
 //#endif
 //#if MC >= 12102
 //$$ import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder;
@@ -38,6 +36,7 @@ import net.minecraft.core.registries.BuiltInRegistries;
 //#if MC >= 12102
 //$$ import net.minecraft.core.registries.Registries;
 //#endif
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -46,9 +45,9 @@ import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.CreativeModeTab;
-import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Item.Properties;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -86,10 +85,10 @@ public class Slideshow implements ModInitializer {
    public static MinecraftServer MC_SERVER;
 //#if MC >= 12102
    //$$ public static final ResourceKey<Item> IMAGE_ITEM_KEY = keyOfItem("image");
-   //$$ public static final Item IMAGE_ITEM = registerItem(new ImageItem(new Properties().stacksTo(1).setId(IMAGE_ITEM_KEY)), IMAGE_ITEM_KEY, CreativeModeTabs.TOOLS_AND_UTILITIES);
+   //$$ public static final Item IMAGE_ITEM = registerItem(new ImageItem(new Properties().stacksTo(1).setId(IMAGE_ITEM_KEY)), IMAGE_ITEM_KEY);
    //$$ public static final ResourceKey<Item> FLIPPER_ITEM_KEY = keyOfItem("flipper");
    //$$ public static final Item FLIPPER_ITEM = registerItem(
-      //$$ new FlipperItem(new Properties().stacksTo(1).setId(FLIPPER_ITEM_KEY)), FLIPPER_ITEM_KEY, CreativeModeTabs.TOOLS_AND_UTILITIES
+      //$$ new FlipperItem(new Properties().stacksTo(1).setId(FLIPPER_ITEM_KEY)), FLIPPER_ITEM_KEY
    //$$ );
    //$$ public static final ResourceKey<Block> PROJECTOR_BLOCK_KEY = keyOfBlock("projector");
    //$$ public static final Block PROJECTOR_BLOCK = registerBlockAndItem(
@@ -109,8 +108,8 @@ public class Slideshow implements ModInitializer {
       //$$ FabricBlockEntityTypeBuilder.create(ProjectorBlockEntity::new, new Block[]{PROJECTOR_BLOCK}).build()
    //$$ );
 //#else
-   public static final Item IMAGE_ITEM = registerItem("image", new ImageItem(new Properties().stacksTo(1)), CreativeModeTabs.TOOLS_AND_UTILITIES);
-   public static final Item FLIPPER_ITEM = registerItem("flipper", new FlipperItem(new Properties().stacksTo(1)), CreativeModeTabs.TOOLS_AND_UTILITIES);
+   public static final Item IMAGE_ITEM = registerItem("image", new ImageItem(new Properties().stacksTo(1)));
+   public static final Item FLIPPER_ITEM = registerItem("flipper", new FlipperItem(new Properties().stacksTo(1)));
    public static final Block PROJECTOR_BLOCK = registerBlockAndItem(
       "projector",
       new ProjectorBlock(net.minecraft.world.level.block.state.BlockBehaviour.Properties.of().sound(SoundType.METAL).strength(20.0F).lightLevel(state -> 15).noCollission())
@@ -121,6 +120,23 @@ public class Slideshow implements ModInitializer {
       Builder.of(ProjectorBlockEntity::new, new Block[]{PROJECTOR_BLOCK}).build(null)
    );
 //#endif
+   public static final CreativeModeTab CREATIVE_TAB = (CreativeModeTab)Registry.register(
+      BuiltInRegistries.CREATIVE_MODE_TAB,
+      ResourceLocation.fromNamespaceAndPath("slide_show", "main"),
+//#if MC >= 26_00_00
+      //$$ FabricCreativeModeTab.builder()
+//#else
+      FabricItemGroup.builder()
+//#endif
+         .title(Component.translatable("itemGroup.slide_show"))
+         .icon(() -> new ItemStack(PROJECTOR_BLOCK))
+         .displayItems((parameters, output) -> {
+            output.accept(PROJECTOR_BLOCK);
+            output.accept(IMAGE_ITEM);
+            output.accept(FLIPPER_ITEM);
+         })
+         .build()
+   );
    public static final DataComponentType<List<Integer>> PROJECTOR_COMPONENT = (DataComponentType<List<Integer>>)Registry.register(
       BuiltInRegistries.DATA_COMPONENT_TYPE, ResourceLocation.fromNamespaceAndPath("slide_show", "projector"), DataComponentType.<List<Integer>>builder().persistent(Codec.INT.listOf(3, 3)).build()
    );
@@ -210,20 +226,14 @@ public class Slideshow implements ModInitializer {
    }
 
 //#if MC >= 12102
-   //$$ private static Item registerItem(Item item, ResourceKey<Item> registryKey, ResourceKey<CreativeModeTab> group) {
-      //$$ Item result = (Item)Registry.register(BuiltInRegistries.ITEM, registryKey, item);
-//#if MC >= 26_00_00
-      //$$ CreativeModeTabEvents.modifyOutputEvent(group).register((ModifyOutput)content -> content.accept(result));
-//#else
-      //$$ ItemGroupEvents.modifyEntriesEvent(group).register((ModifyEntries)content -> content.accept(result));
-//#endif
-      //$$ return result;
+   //$$ private static Item registerItem(Item item, ResourceKey<Item> registryKey) {
+      //$$ return (Item)Registry.register(BuiltInRegistries.ITEM, registryKey, item);
    //$$ }
 
    //$$ private static Block registerBlockAndItem(Block block, ResourceKey<Block> registryKey) {
       //$$ Block block0 = (Block)Registry.register(BuiltInRegistries.BLOCK, registryKey, block);
       //$$ ResourceKey<Item> key = ResourceKey.create(Registries.ITEM, registryKey.location());
-      //$$ registerItem(new BlockItem(block0, new Properties().setId(key).useBlockDescriptionPrefix()), key, CreativeModeTabs.TOOLS_AND_UTILITIES);
+      //$$ registerItem(new BlockItem(block0, new Properties().setId(key).useBlockDescriptionPrefix()), key);
       //$$ return block0;
    //$$ }
 
@@ -235,15 +245,13 @@ public class Slideshow implements ModInitializer {
       //$$ return ResourceKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath("slide_show", path));
    //$$ }
 //#else
-   private static Item registerItem(String path, Item item, ResourceKey<CreativeModeTab> group) {
-      Item result = (Item)Registry.register(BuiltInRegistries.ITEM, ResourceLocation.fromNamespaceAndPath("slide_show", path), item);
-      ItemGroupEvents.modifyEntriesEvent(group).register((ModifyEntries)content -> content.accept(result));
-      return result;
+   private static Item registerItem(String path, Item item) {
+      return (Item)Registry.register(BuiltInRegistries.ITEM, ResourceLocation.fromNamespaceAndPath("slide_show", path), item);
    }
 
    private static Block registerBlockAndItem(String path, Block block) {
       Block block0 = (Block)Registry.register(BuiltInRegistries.BLOCK, ResourceLocation.fromNamespaceAndPath("slide_show", path), block);
-      registerItem(path, new BlockItem(block0, new Properties()), CreativeModeTabs.TOOLS_AND_UTILITIES);
+      registerItem(path, new BlockItem(block0, new Properties()));
       return block0;
    }
 //#endif

@@ -1,6 +1,8 @@
 {
     "block.slide_show.projector": "投影機",
 
+    "itemGroup.slide_show": "投影機 Pro",
+
     "item.slide_show.flipper": "翻頁筆",
     "item.slide_show.flipper.tooltip.bound": "已綁定投影機[%s, %s, %s]",
     "item.slide_show.flipper.tooltip.not_bound": "未綁定投影機",

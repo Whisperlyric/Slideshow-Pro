@@ -1,6 +1,8 @@
 {
     "block.slide_show.projector": "Slideshow Projector",
 
+    "itemGroup.slide_show": "Slideshow Pro",
+
     "item.slide_show.flipper": "Flipper",
     "item.slide_show.flipper.tooltip.bound": "Projector bound in [%s, %s, %s]",
     "item.slide_show.flipper.tooltip.not_bound": "No projector bound",

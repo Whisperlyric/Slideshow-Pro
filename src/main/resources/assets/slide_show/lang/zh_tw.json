@@ -1,6 +1,8 @@
 {
     "block.slide_show.projector": "幻燈片投影儀",
 
+    "itemGroup.slide_show": "幻燈片 Pro",
+
     "item.slide_show.flipper": "翻頁筆",
     "item.slide_show.flipper.tooltip.bound": "已綁定投影儀[%s, %s, %s]",
     "item.slide_show.flipper.tooltip.not_bound": "未綁定投影儀",
