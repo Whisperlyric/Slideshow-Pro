@@ -9,7 +9,11 @@ import java.util.function.Predicate;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
+//#if MC >= 26_00_00
+//$$ import net.minecraft.client.gui.GuiGraphicsExtractor;
+//#else
 import net.minecraft.client.gui.GuiGraphics;
+//#endif
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.components.Tooltip;
@@ -167,8 +171,12 @@ public final class ProjectorScreen extends AbstractContainerScreen<ProjectorScre
          this.setInitialFocus(this.mURLInput);
          this.mColorInput = new EditBox(this.font, leftPos + 55, topPos + 155, 56, 16, Component.translatable("gui.slide_show.color"));
          this.mColorInput.setMaxLength(8);
-         this.mColorInput.setFilter(COLOR_PREDICATE);
-         this.mColorInput.setResponder(text -> {
+         //#if MC >= 26_00_00
+      //$$ // EditBox.setFilter removed in 26.x
+//#else
+      this.mColorInput.setFilter(COLOR_PREDICATE);
+//#endif
+      this.mColorInput.setResponder(text -> {
             try {
                this.mImageColor = Integer.parseUnsignedInt(text, 16);
             } catch (Exception var3) {
@@ -248,7 +256,11 @@ public final class ProjectorScreen extends AbstractContainerScreen<ProjectorScre
          });
          this.addRenderableWidget(this.mHeightInput);
          this.mAngleXInput = new EditBox(this.font, leftPos + 30, topPos + 90, 29, 16, Component.translatable("gui.slide_show.angle_x"));
+//#if MC >= 26_00_00
+         //$$ // EditBox.setFilter removed in 26.x
+//#else
          this.mAngleXInput.setFilter(INTEGER_PREDICATE);
+//#endif
          this.mAngleXInput.setResponder(input -> {
             if (this.editBool) {
                try {
@@ -266,7 +278,11 @@ public final class ProjectorScreen extends AbstractContainerScreen<ProjectorScre
          this.mAngleXInput.setTextColor(14737632);
          this.addRenderableWidget(this.mAngleXInput);
          this.mAngleYInput = new EditBox(this.font, leftPos + 84, topPos + 90, 29, 16, Component.translatable("gui.slide_show.angle_y"));
+//#if MC >= 26_00_00
+         //$$ // EditBox.setFilter removed in 26.x
+//#else
          this.mAngleYInput.setFilter(INTEGER_PREDICATE);
+//#endif
          this.mAngleYInput.setResponder(input -> {
             if (this.editBool) {
                try {
@@ -284,7 +300,11 @@ public final class ProjectorScreen extends AbstractContainerScreen<ProjectorScre
          this.mAngleYInput.setTextColor(14737632);
          this.addRenderableWidget(this.mAngleYInput);
          this.mAngleZInput = new EditBox(this.font, leftPos + 138, topPos + 90, 29, 16, Component.translatable("gui.slide_show.angle_z"));
+//#if MC >= 26_00_00
+         //$$ // EditBox.setFilter removed in 26.x
+//#else
          this.mAngleZInput.setFilter(INTEGER_PREDICATE);
+//#endif
          this.mAngleZInput.setResponder(input -> {
             if (this.editBool) {
                try {
@@ -577,7 +597,11 @@ public final class ProjectorScreen extends AbstractContainerScreen<ProjectorScre
    }
 //#endif
 
+//#if MC >= 26_00_00
+   //$$ public void extractContents(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
+//#else
    protected void renderBg(GuiGraphics context, float delta, int mouseX, int mouseY) {
+//#endif
 //#if MC >= 12108
       //$$ context.blit(
          //$$ RenderPipelines.GUI_TEXTURED,
@@ -611,7 +635,11 @@ public final class ProjectorScreen extends AbstractContainerScreen<ProjectorScre
 //#endif
    }
 
+//#if MC >= 26_00_00
+   //$$ protected void extractLabels(GuiGraphicsExtractor context, int mouseX, int mouseY) {
+//#else
    protected void renderLabels(GuiGraphics context, int mouseX, int mouseY) {
+//#endif
       if (this.mEntity != null) {
          int alpha = this.mImageColor >>> 24;
          if (alpha > 0) {
@@ -640,52 +668,73 @@ public final class ProjectorScreen extends AbstractContainerScreen<ProjectorScre
          context.blit(GUI_TEXTURE, 82, 159, 202, 194 - this.mRotation.ordinal() * 20, 17, 17);
 //#endif
          drawCenteredStringWithoutShadow(context, this.font, IMAGE_TEXT, this.imageWidth / 2, -14);
+//#if MC >= 26_00_00
+         //$$ context.text(this.font, this.propIndex + 1 + "/" + this.props.size(), this.imageWidth / 2 - 50, 31, -12566464, false);
+//#else
          context.drawString(this.font, this.propIndex + 1 + "/" + this.props.size(), this.imageWidth / 2 - 50, 31, -12566464, false);
+//#endif
          drawCenteredStringWithoutShadow(context, this.font, OTHERS_TEXT, this.imageWidth / 2, 112);
          int offsetX = mouseX - (this.width - this.imageWidth) / 2;
          int offsetY = mouseY - (this.height - this.imageHeight) / 2;
          if (offsetX >= 9 && offsetY >= 27 && offsetX < 27 && offsetY < 46) {
-            context.renderTooltip(this.font, switch (this.mSourceType) {
+            renderTooltip(context, this.font, switch (this.mSourceType) {
                case ResourceID -> ID_TEXT;
                case ContainerBlock -> CONTAINER_TEXT;
                default -> URL_TEXT;
             }, offsetX, offsetY);
          } else if (offsetX >= 149 && offsetY >= 7 && offsetX < 167 && offsetY < 26) {
             if (this.mSourceType != SourceType.ContainerBlock) {
-               context.renderTooltip(this.font, EXPORT_TEXT, offsetX, offsetY);
+               renderTooltip(context, this.font, EXPORT_TEXT, offsetX, offsetY);
             }
          } else if (offsetX >= 34 && offsetY >= 153 && offsetX < 52 && offsetY < 172) {
-            context.renderTooltip(this.font, COLOR_TEXT, offsetX, offsetY);
+            renderTooltip(context, this.font, COLOR_TEXT, offsetX, offsetY);
          } else if (offsetX >= 9 && offsetY >= 66 && offsetX < 27 && offsetY < 85) {
-            context.renderTooltip(this.font, WIDTH_TEXT, offsetX, offsetY);
+            renderTooltip(context, this.font, WIDTH_TEXT, offsetX, offsetY);
          } else if (offsetX >= 90 && offsetY >= 66 && offsetX < 108 && offsetY < 85) {
-            context.renderTooltip(this.font, HEIGHT_TEXT, offsetX, offsetY);
+            renderTooltip(context, this.font, HEIGHT_TEXT, offsetX, offsetY);
          } else if (offsetX >= 9 && offsetY >= 88 && offsetX < 27 && offsetY < 107) {
-            context.renderTooltip(this.font, ANGLE_X_TEXT, offsetX, offsetY);
+            renderTooltip(context, this.font, ANGLE_X_TEXT, offsetX, offsetY);
          } else if (offsetX >= 63 && offsetY >= 88 && offsetX < 81 && offsetY < 107) {
-            context.renderTooltip(this.font, ANGLE_Y_TEXT, offsetX, offsetY);
+            renderTooltip(context, this.font, ANGLE_Y_TEXT, offsetX, offsetY);
          } else if (offsetX >= 117 && offsetY >= 88 && offsetX < 135 && offsetY < 107) {
-            context.renderTooltip(this.font, ANGLE_Z_TEXT, offsetX, offsetY);
+            renderTooltip(context, this.font, ANGLE_Z_TEXT, offsetX, offsetY);
          } else if (offsetX >= 9 && offsetY >= 110 && offsetX < 27 && offsetY < 129) {
-            context.renderTooltip(this.font, OFFSET_X_TEXT, offsetX, offsetY);
+            renderTooltip(context, this.font, OFFSET_X_TEXT, offsetX, offsetY);
          } else if (offsetX >= 63 && offsetY >= 110 && offsetX < 81 && offsetY < 129) {
-            context.renderTooltip(this.font, OFFSET_Y_TEXT, offsetX, offsetY);
+            renderTooltip(context, this.font, OFFSET_Y_TEXT, offsetX, offsetY);
          } else if (offsetX >= 117 && offsetY >= 110 && offsetX < 135 && offsetY < 129) {
-            context.renderTooltip(this.font, OFFSET_Z_TEXT, offsetX, offsetY);
+            renderTooltip(context, this.font, OFFSET_Z_TEXT, offsetX, offsetY);
          } else if (offsetX >= 117 && offsetY >= 153 && offsetX < 135 && offsetY < 172) {
-            context.renderTooltip(this.font, FLIP_TEXT, offsetX, offsetY);
+            renderTooltip(context, this.font, FLIP_TEXT, offsetX, offsetY);
          } else if (offsetX >= 142 && offsetY >= 153 && offsetX < 160 && offsetY < 172) {
-            context.renderTooltip(this.font, ROTATE_TEXT, offsetX, offsetY);
+            renderTooltip(context, this.font, ROTATE_TEXT, offsetX, offsetY);
          } else if (offsetX >= 9 && offsetY >= 153 && offsetX < 27 && offsetY < 172) {
-            context.renderTooltip(this.font, SINGLE_DOUBLE_SIDED_TEXT, offsetX, offsetY);
+            renderTooltip(context, this.font, SINGLE_DOUBLE_SIDED_TEXT, offsetX, offsetY);
          }
       }
    }
 
+//#if MC >= 26_00_00
+   //$$ private static void renderTooltip(GuiGraphicsExtractor ctx, Font textRenderer, Component text, int mouseX, int mouseY) {
+      //$$ ctx.setTooltipForNextFrame(textRenderer, text, mouseX, mouseY);
+   //$$ }
+//#else
+   private static void renderTooltip(GuiGraphics ctx, Font textRenderer, Component text, int mouseX, int mouseY) {
+      ctx.renderTooltip(textRenderer, text, mouseX, mouseY);
+   }
+//#endif
+
+//#if MC >= 26_00_00
+   //$$ private static void drawCenteredStringWithoutShadow(GuiGraphicsExtractor ctx, Font textRenderer, Component text, int centerX, int y) {
+      //$$ FormattedCharSequence orderedText = text.getVisualOrderText();
+      //$$ ctx.text(textRenderer, text, centerX - textRenderer.width(orderedText) / 2, y, -12566464, false);
+   //$$ }
+//#else
    private static void drawCenteredStringWithoutShadow(GuiGraphics ctx, Font textRenderer, Component text, int centerX, int y) {
       FormattedCharSequence orderedText = text.getVisualOrderText();
       ctx.drawString(textRenderer, text, centerX - textRenderer.width(orderedText) / 2, y, -12566464, false);
    }
+//#endif
 
    private static float parseFloat(String text) {
       return (float)Math.round(Float.parseFloat(text) * 10000.0F) / 10000.0F;
@@ -723,7 +772,9 @@ public final class ProjectorScreen extends AbstractContainerScreen<ProjectorScre
          this.texture = texture;
       }
 
-//#if MC >= 12111
+//#if MC >= 26_00_00
+      //$$ protected void extractContents(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
+//#elseif MC >= 12111
       //$$ protected void renderContents(GuiGraphics context, int mouseX, int mouseY, float delta) {
 //#else
       public void renderWidget(GuiGraphics context, int mouseX, int mouseY, float delta) {

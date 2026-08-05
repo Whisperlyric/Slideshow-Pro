@@ -2,7 +2,11 @@ package org.teacon.slides.projector;
 
 import java.util.ArrayList;
 import java.util.List;
+//#if MC >= 26_00_00
+//$$ import net.fabricmc.fabric.api.menu.v1.ExtendedMenuProvider;
+//#else
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
+//#endif
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup.Provider;
@@ -38,7 +42,11 @@ import org.teacon.slides.network.ProjectorOpenScreenPayload;
 import org.teacon.slides.util.RegistryServer;
 import org.teacon.slides.util.Utilities;
 
+//#if MC >= 26_00_00
+//$$ public final class ProjectorBlockEntity extends BlockEntity implements ExtendedMenuProvider<ProjectorOpenScreenPayload> {
+//#else
 public final class ProjectorBlockEntity extends BlockEntity implements ExtendedScreenHandlerFactory<ProjectorOpenScreenPayload> {
+//#endif
    public SourceType mSourceType = SourceType.URL;
    public String mLocation = "";
    public int mColor = -1;

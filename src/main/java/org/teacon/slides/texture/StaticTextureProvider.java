@@ -7,7 +7,14 @@ import com.mojang.blaze3d.systems.RenderSystem;
 //$$ import com.mojang.blaze3d.textures.AddressMode;
 //$$ import com.mojang.blaze3d.textures.FilterMode;
 //$$ import com.mojang.blaze3d.textures.GpuTexture;
+//#if MC >= 26_00_00
+//$$ import com.mojang.blaze3d.platform.Transparency;
+//#endif
+//#if MC >= 26_02_00
+//$$ import com.mojang.blaze3d.GpuFormat;
+//#else
 //$$ import com.mojang.blaze3d.textures.TextureFormat;
+//#endif
 //$$ import net.minecraft.client.renderer.texture.MipmapGenerator;
 //#endif
 //#if MC >= 12111
@@ -56,13 +63,22 @@ public final class StaticTextureProvider implements TextureProvider {
 
 //#if MC >= 12108
 //$$ 			mTexture = RenderSystem.getDevice().createTexture("slide_show_static",
+//#if MC >= 26_02_00
+//$$ 					GpuTexture.USAGE_TEXTURE_BINDING | GpuTexture.USAGE_COPY_DST, GpuFormat.RGBA8_UNORM, mWidth, mHeight, 1, maxLevel + 1);
+//#else
 //$$ 					GpuTexture.USAGE_TEXTURE_BINDING | GpuTexture.USAGE_COPY_DST, TextureFormat.RGBA8, mWidth, mHeight, 1, maxLevel + 1);
+//#endif
 //#if MC >= 12111
 //$$ 			GpuSampler sampler = RenderSystem.getSamplerCache().getSampler(
 //$$ 					AddressMode.CLAMP_TO_EDGE, AddressMode.CLAMP_TO_EDGE, FilterMode.NEAREST, FilterMode.LINEAR, true);
 //$$ 			NativeImage[] levels = MipmapGenerator.generateMipLevels(
 //$$ 					Identifier.fromNamespaceAndPath(Slideshow.ID, "textures/generated/slide_show_static"),
-//$$ 					new NativeImage[]{image}, maxLevel, MipmapStrategy.AUTO, 0.5F);
+//$$ 					new NativeImage[]{image}, maxLevel, MipmapStrategy.AUTO, 0.5F
+//#if MC >= 26_00_00
+//$$ 					, Transparency.NONE);
+//#else
+//$$ 					);
+//#endif
 //#else
 //$$ 			mTexture.setAddressMode(AddressMode.CLAMP_TO_EDGE);
 //$$ 			mTexture.setTextureFilter(FilterMode.NEAREST, FilterMode.LINEAR, true);
@@ -70,8 +86,12 @@ public final class StaticTextureProvider implements TextureProvider {
 //#endif
 //$$ 			CommandEncoder encoder = RenderSystem.getDevice().createCommandEncoder();
 //$$ 			for (int level = 0; level <= maxLevel; ++level) {
+//#if MC >= 26_02_00
+//$$ 				encoder.writeToTexture(mTexture, levels[level], level, 0, 0, 0);
+//#else
 //$$ 				encoder.writeToTexture(mTexture, levels[level], level, 0, 0, 0,
 //$$ 						Math.max(1, mWidth >> level), Math.max(1, mHeight >> level), 0, 0);
+//#endif
 //$$ 			}
 //$$ 			for (int level = 1; level <= maxLevel; ++level) {
 //$$ 				levels[level].close();

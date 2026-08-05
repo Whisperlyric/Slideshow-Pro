@@ -3,8 +3,10 @@ package org.teacon.slides.renderer;
 import org.joml.Matrix4f;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
+//#if MC < 26_02_00
+import net.minecraft.client.renderer.MultiBufferSource;
+//#endif
 //#if MC >= 12110
 //$$ import net.minecraft.client.renderer.SubmitNodeCollector;
 //#endif
@@ -16,9 +18,11 @@ import org.teacon.slides.texture.TextureProvider;
 
 public abstract class Slide implements AutoCloseable {
 
+//#if MC < 26_02_00
 	public abstract void render(@NotNull MultiBufferSource source, @NotNull Matrix4f matrix,
 								@NotNull PoseStack.Pose normal, float width, float height, int color,
 								int light, int overlay, boolean front, boolean back, long tick, float partialTick);
+//#endif
 
 //#if MC >= 12110
 //$$ 	@NotNull
@@ -70,6 +74,7 @@ public abstract class Slide implements AutoCloseable {
 			mTexture = texture;
 		}
 
+//#if MC < 26_02_00
 		@Override
 		public void render(@NotNull MultiBufferSource source, @NotNull Matrix4f matrix,
 						   @NotNull PoseStack.Pose normal, float width, float height, int color,
@@ -80,6 +85,7 @@ public abstract class Slide implements AutoCloseable {
 			renderQuads(source.getBuffer(mTexture.updateAndGet(tick, partialTick)), matrix, normal, width, height, color, light, overlay, front, back, tick, partialTick);
 //#endif
 		}
+//#endif
 
 //#if MC >= 12110
 		//$$ @NotNull
@@ -201,6 +207,7 @@ public abstract class Slide implements AutoCloseable {
 			return Math.min(width, height) / (24 + Mth.fastInvCubeRoot(0.00390625F / (width * width + height * height)));
 		}
 
+//#if MC < 26_02_00
 		@Override
 		public void render(@NotNull MultiBufferSource source, @NotNull Matrix4f matrix,
 						   @NotNull PoseStack.Pose normal, float width, float height, int color,
@@ -215,6 +222,7 @@ public abstract class Slide implements AutoCloseable {
 				}
 			}
 		}
+//#endif
 
 //#if MC >= 12110
 		//$$ @NotNull

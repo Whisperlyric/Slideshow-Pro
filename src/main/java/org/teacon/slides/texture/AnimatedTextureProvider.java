@@ -6,7 +6,11 @@ import com.mojang.blaze3d.systems.RenderSystem;
 //$$ import com.mojang.blaze3d.textures.AddressMode;
 //$$ import com.mojang.blaze3d.textures.FilterMode;
 //$$ import com.mojang.blaze3d.textures.GpuTexture;
+//#if MC >= 26_02_00
+//$$ import com.mojang.blaze3d.GpuFormat;
+//#else
 //$$ import com.mojang.blaze3d.textures.TextureFormat;
+//#endif
 //#endif
 //#if MC >= 12111
 //$$ import com.mojang.blaze3d.textures.GpuSampler;
@@ -57,7 +61,11 @@ public final class AnimatedTextureProvider implements TextureProvider {
 //$$ 
 //#if MC >= 12108
 //$$ 			mTexture = RenderSystem.getDevice().createTexture("slide_show_animated",
+//#if MC >= 26_02_00
+//$$ 					GpuTexture.USAGE_TEXTURE_BINDING | GpuTexture.USAGE_COPY_DST, GpuFormat.RGBA8_UNORM, width, height, 1, 1);
+//#else
 //$$ 					GpuTexture.USAGE_TEXTURE_BINDING | GpuTexture.USAGE_COPY_DST, TextureFormat.RGBA8, width, height, 1, 1);
+//#endif
 //#if MC >= 12111
 //$$ 			GpuSampler sampler = RenderSystem.getSamplerCache().getSampler(
 //$$ 					AddressMode.CLAMP_TO_EDGE, AddressMode.CLAMP_TO_EDGE, FilterMode.NEAREST, FilterMode.LINEAR, false);
@@ -66,8 +74,13 @@ public final class AnimatedTextureProvider implements TextureProvider {
 //$$ 			mTexture.setTextureFilter(FilterMode.NEAREST, FilterMode.LINEAR, false);
 //#endif
 //#if MC >= 12110
+//#if MC >= 26_02_00
+//$$ 			RenderSystem.getDevice().createCommandEncoder().writeToTexture(
+//$$ 					mTexture, buffer.rewind(), 0, 0, 0, 0, width, height);
+//#else
 //$$ 			RenderSystem.getDevice().createCommandEncoder().writeToTexture(
 //$$ 					mTexture, buffer.rewind(), NativeImage.Format.RGBA, 0, 0, 0, 0, width, height);
+//#endif
 //#else
 //$$ 			RenderSystem.getDevice().createCommandEncoder().writeToTexture(
 //$$ 					mTexture, buffer.rewind().asIntBuffer(), NativeImage.Format.RGBA, 0, 0, 0, 0, width, height);
@@ -156,8 +169,13 @@ public final class AnimatedTextureProvider implements TextureProvider {
 				buffer = MemoryUtil.memAlloc(width * height * 4);
 				mFrameDelayTime = mDecoder.decodeNextFrame(buffer);
 //#if MC >= 12110
+//#if MC >= 26_02_00
+//$$ 			RenderSystem.getDevice().createCommandEncoder().writeToTexture(
+//$$ 					mTexture, buffer.rewind(), 0, 0, 0, 0, width, height);
+//#else
 //$$ 			RenderSystem.getDevice().createCommandEncoder().writeToTexture(
 //$$ 					mTexture, buffer.rewind(), NativeImage.Format.RGBA, 0, 0, 0, 0, width, height);
+//#endif
 //#elseif MC >= 12108
 //$$ 			RenderSystem.getDevice().createCommandEncoder().writeToTexture(
 //$$ 					mTexture, buffer.rewind().asIntBuffer(), NativeImage.Format.RGBA, 0, 0, 0, 0, width, height);

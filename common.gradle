@@ -54,6 +54,11 @@ if (unobfuscated) JAVA_COMPATIBILITY = JavaVersion.VERSION_25
 java {
     sourceCompatibility = JAVA_COMPATIBILITY
     targetCompatibility = JAVA_COMPATIBILITY
+    if (unobfuscated) {
+        toolchain {
+            languageVersion = JavaLanguageVersion.of(25)
+        }
+    }
 }
 
 sourceSets.main.resources {
@@ -93,6 +98,7 @@ afterEvaluate {
 }
 
 processResources {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     inputs.property "version", project.mod_version
     inputs.property "minecraft_range", project.minecraft_range
     inputs.property "java_version", JAVA_COMPATIBILITY.toString()

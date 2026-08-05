@@ -44,7 +44,14 @@ public class SlideshowClient implements ClientModInitializer {
       RegistryClient.registerClientStoppingEvent(SlideState::onPlayerLeft);
       RegistryClient.registerNetworkReceiver(ProjectorImageInfoS2CPayload.ID, ProjectorImageInfoS2CPayload::handle);
       MenuScreens.register(Slideshow.PROJECTOR_SCREEN_HANDLER, ProjectorScreen::new);
-//#if MC >= 12111
+//#if MC >= 26_00_00
+      //$$ ResourceLoader.get(PackType.CLIENT_RESOURCES).registerReloadListener(Identifier.fromNamespaceAndPath("slide_show", "client_reload"), new ResourceManagerReloadListener() {
+         //$$ public void onResourceManagerReload(ResourceManager resourceManager) {
+            //$$ SlideState.clearCacheID();
+            //$$ Config.refreshProperties();
+         //$$ }
+      //$$ });
+//#elseif MC >= 12111
       //$$ ResourceLoader.get(PackType.CLIENT_RESOURCES).registerReloader(Identifier.fromNamespaceAndPath("slide_show", "client_reload"), new ResourceManagerReloadListener() {
          //$$ public void onResourceManagerReload(ResourceManager resourceManager) {
             //$$ SlideState.clearCacheID();

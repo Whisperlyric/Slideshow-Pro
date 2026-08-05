@@ -5,13 +5,19 @@ import com.mojang.blaze3d.vertex.PoseStack.Pose;
 //#if MC >= 12110
 //$$ import java.util.List;
 //#endif
+//#if MC < 26_02_00
 import net.minecraft.client.renderer.MultiBufferSource;
+//#endif
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 //#if MC >= 12110
 //$$ import net.minecraft.client.renderer.SubmitNodeCollector;
 //$$ import net.minecraft.client.renderer.blockentity.state.BlockEntityRenderState;
 //$$ import net.minecraft.client.renderer.feature.ModelFeatureRenderer;
+//#if MC >= 26_00_00
+//$$ import net.minecraft.client.renderer.state.level.CameraRenderState;
+//#else
 //$$ import net.minecraft.client.renderer.state.CameraRenderState;
+//#endif
 //#endif
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.world.level.block.state.BlockState;
@@ -45,6 +51,7 @@ public class ProjectorRenderer implements BlockEntityRenderer<ProjectorBlockEnti
 	//$$ public void extractRenderState(ProjectorBlockEntity blockEntity, ProjectorRenderState state, float partialTick,
 									 //$$ Vec3 cameraPosition, ModelFeatureRenderer.CrumblingOverlay crumblingOverlay) {
 		//$$ BlockEntityRenderState.extractBase(blockEntity, state, crumblingOverlay);
+		//$$ state.blockStateEx = blockEntity.getBlockState();
 		//$$ state.location = blockEntity.getLocation();
 		//$$ state.fromID = blockEntity.getFromID();
 		//$$ state.mSourceType = blockEntity.mSourceType;
@@ -65,15 +72,15 @@ public class ProjectorRenderer implements BlockEntityRenderer<ProjectorBlockEnti
 		//$$ Slide slide = state.slide;
 		//$$ if (slide != null) {
 			//$$ int color = state.color;
-			//$$ if ((color & 0xFF000000) != 0 && !state.blockState.getValue(BlockStateProperties.POWERED)) {
+			//$$ if ((color & 0xFF000000) != 0 && !state.blockStateEx.getValue(BlockStateProperties.POWERED)) {
 				//$$ boolean doubleSided = state.doubleSided;
-				//$$ boolean flipped = state.blockState.getValue(ProjectorBlock.ROTATION).isFlipped();
+				//$$ boolean flipped = state.blockStateEx.getValue(ProjectorBlock.ROTATION).isFlipped();
 				//$$ for (ImageProperties prop : state.imageProps) {
 					//$$ poseStack.pushPose();
 					//$$ Pose lastPose = poseStack.last();
 					//$$ Matrix4f pose = new Matrix4f(lastPose.pose());
 					//$$ Matrix3f normal = new Matrix3f(lastPose.normal());
-					//$$ transformToSlideSpace(pose, normal, prop, state.blockState);
+					//$$ transformToSlideSpace(pose, normal, prop, state.blockStateEx);
 					//$$ slide.submitTo(collector, pose, lastPose, prop.width, prop.height, color,
 							//$$ state.lightCoords, OverlayTexture.NO_OVERLAY,
 							//$$ flipped || doubleSided, !flipped || doubleSided,
@@ -162,6 +169,7 @@ public class ProjectorRenderer implements BlockEntityRenderer<ProjectorBlockEnti
 	//$$ }
 
 	//$$ public static final class ProjectorRenderState extends BlockEntityRenderState {
+		//$$ public BlockState blockStateEx;
 		//$$ public String location;
 		//$$ public boolean fromID;
 		//$$ public SourceType mSourceType;

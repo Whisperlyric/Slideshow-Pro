@@ -55,6 +55,20 @@ import org.teacon.slides.Slideshow;
 //$$ 	private final RenderType delegate;
 //$$
 //$$ 	public SlideRenderType(GpuTexture texture, GpuSampler sampler) {
+//#if MC >= 26_00_00
+//$$ 		this.delegate = RenderType.create(Slideshow.ID, RenderSetup.builder(RenderPipelines.TRANSLUCENT_BLOCK)
+//$$ 				.withTexture("Sampler0", registerTexture(texture, sampler))
+//$$ 				.useLightmap()
+//$$ 				.createRenderSetup());
+//$$ 	}
+//$$
+//$$ 	SlideRenderType(Identifier texture) {
+//$$ 		this.delegate = RenderType.create(ID_ICON, RenderSetup.builder(RenderPipelines.TRANSLUCENT_BLOCK)
+//$$ 				.withTexture("Sampler0", texture)
+//$$ 				.useLightmap()
+//$$ 				.createRenderSetup());
+//$$ 	}
+//#else
 //$$ 		this.delegate = RenderType.create(Slideshow.ID, RenderSetup.builder(RenderPipelines.TRANSLUCENT_MOVING_BLOCK)
 //$$ 				.withTexture("Sampler0", registerTexture(texture, sampler))
 //$$ 				.useLightmap()
@@ -67,6 +81,7 @@ import org.teacon.slides.Slideshow;
 //$$ 				.useLightmap()
 //$$ 				.createRenderSetup());
 //$$ 	}
+//#endif
 //$$
 //$$ 	public RenderType asRenderType() {
 //$$ 		return this.delegate;

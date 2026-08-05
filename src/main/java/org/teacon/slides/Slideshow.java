@@ -8,8 +8,13 @@ import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents.ServerStarting;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents.ServerStopping;
+//#if MC >= 26_00_00
+//$$ import net.fabricmc.fabric.api.creativetab.v1.CreativeModeTabEvents;
+//$$ import net.fabricmc.fabric.api.creativetab.v1.CreativeModeTabEvents.ModifyOutput;
+//#else
 import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
 import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents.ModifyEntries;
+//#endif
 //#if MC >= 12102
 //$$ import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder;
 //#endif
@@ -21,7 +26,11 @@ import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents.ModifyEntries;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.fabricmc.fabric.api.resource.SimpleSynchronousResourceReloadListener;
 //#endif
+//#if MC >= 26_00_00
+//$$ import net.fabricmc.fabric.api.menu.v1.ExtendedMenuType;
+//#else
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerType;
+//#endif
 import net.minecraft.commands.synchronization.SingletonArgumentInfo;
 import net.minecraft.core.Registry;
 import net.minecraft.core.component.DataComponentType;
@@ -121,6 +130,16 @@ public class Slideshow implements ModInitializer {
    public static final DataComponentType<String> LOCATION_COMPONENT = (DataComponentType<String>)Registry.register(
       BuiltInRegistries.DATA_COMPONENT_TYPE, ResourceLocation.fromNamespaceAndPath("slide_show", "location"), DataComponentType.<String>builder().persistent(Codec.STRING).build()
    );
+//#if MC >= 26_00_00
+   //$$ public static final ExtendedMenuType<ProjectorScreenHandler, ProjectorOpenScreenPayload> PROJECTOR_SCREEN_HANDLER = (ExtendedMenuType<ProjectorScreenHandler, ProjectorOpenScreenPayload>)Registry.register(
+      //$$ BuiltInRegistries.MENU,
+      //$$ Identifier.fromNamespaceAndPath("slide_show", "projector_screen_handler"),
+      //$$ new ExtendedMenuType<ProjectorScreenHandler, ProjectorOpenScreenPayload>(
+         //$$ (syncId, inventory, data) -> new ProjectorScreenHandler(syncId, data),
+         //$$ StreamCodec.ofMember(ProjectorOpenScreenPayload::writeBuffer, ProjectorOpenScreenPayload::new)
+      //$$ )
+   //$$ );
+//#else
    public static final ExtendedScreenHandlerType<ProjectorScreenHandler, ProjectorOpenScreenPayload> PROJECTOR_SCREEN_HANDLER = (ExtendedScreenHandlerType<ProjectorScreenHandler, ProjectorOpenScreenPayload>)Registry.register(
       BuiltInRegistries.MENU,
       ResourceLocation.fromNamespaceAndPath("slide_show", "projector_screen_handler"),
@@ -129,6 +148,7 @@ public class Slideshow implements ModInitializer {
          StreamCodec.ofMember(ProjectorOpenScreenPayload::writeBuffer, ProjectorOpenScreenPayload::new)
       )
    );
+//#endif
 
    public void onInitialize() {
       RegistryServer.registerCodec(ProjectorAfterUpdateC2SPayload.ID, ProjectorAfterUpdateC2SPayload::writeBuffer, ProjectorAfterUpdateC2SPayload::new);
@@ -159,7 +179,14 @@ public class Slideshow implements ModInitializer {
          MC_SERVER = null;
          ServerConfig.uninit();
       });
-//#if MC >= 12111
+//#if MC >= 26_00_00
+      //$$ ResourceLoader.get(PackType.SERVER_DATA).registerReloadListener(Identifier.fromNamespaceAndPath("slide_show", "server_reload"), new ResourceManagerReloadListener() {
+         //$$ public void onResourceManagerReload(ResourceManager manager) {
+            //$$ ServerConfig.init(Slideshow.MC_SERVER);
+            //$$ ServerConfig.refreshProperties();
+         //$$ }
+      //$$ });
+//#elseif MC >= 12111
       //$$ ResourceLoader.get(PackType.SERVER_DATA).registerReloader(Identifier.fromNamespaceAndPath("slide_show", "server_reload"), new ResourceManagerReloadListener() {
          //$$ public void onResourceManagerReload(ResourceManager manager) {
             //$$ ServerConfig.init(Slideshow.MC_SERVER);
@@ -185,7 +212,11 @@ public class Slideshow implements ModInitializer {
 //#if MC >= 12102
    //$$ private static Item registerItem(Item item, ResourceKey<Item> registryKey, ResourceKey<CreativeModeTab> group) {
       //$$ Item result = (Item)Registry.register(BuiltInRegistries.ITEM, registryKey, item);
+//#if MC >= 26_00_00
+      //$$ CreativeModeTabEvents.modifyOutputEvent(group).register((ModifyOutput)content -> content.accept(result));
+//#else
       //$$ ItemGroupEvents.modifyEntriesEvent(group).register((ModifyEntries)content -> content.accept(result));
+//#endif
       //$$ return result;
    //$$ }
 

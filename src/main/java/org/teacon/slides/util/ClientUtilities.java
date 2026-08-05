@@ -7,6 +7,10 @@ import org.teacon.slides.projector.ImageSourceScreen;
 
 public class ClientUtilities {
    public static void clientSetScreen(InteractionHand hand, ItemStack itemStack) {
+//#if MC >= 26_02_00
+      //$$ Minecraft.getInstance().setScreenAndShow(new ImageSourceScreen(hand, itemStack));
+//#else
       Minecraft.getInstance().setScreen(new ImageSourceScreen(hand, itemStack));
+//#endif
    }
 }

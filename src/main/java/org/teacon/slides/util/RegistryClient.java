@@ -2,7 +2,11 @@ package org.teacon.slides.util;
 
 import java.util.function.Consumer;
 //#if MC >= 12108
+//#if MC >= 26_00_00
+//$$ // BlockRenderLayerMap is unavailable in 26.x; render type registration is a no-op
+//#else
 //$$ import net.fabricmc.fabric.api.client.rendering.v1.BlockRenderLayerMap;
+//#endif
 //#else
 import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
 //#endif
@@ -34,7 +38,11 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 public class RegistryClient {
 //#if MC >= 12108
    //$$ public static void registerBlockRenderType(Block block, ChunkSectionLayer type) {
-   //$$    BlockRenderLayerMap.putBlock(block, type);
+//#if MC >= 26_00_00
+      //$$ // BlockRenderLayerMap is unavailable in 26.x; intentionally a no-op
+//#else
+      //$$ BlockRenderLayerMap.putBlock(block, type);
+//#endif
    //$$ }
 //#else
    public static void registerBlockRenderType(Block block, RenderType type) {
@@ -55,8 +63,13 @@ public class RegistryClient {
    public static <V extends CustomPacketPayload> void registerCodec(
       Type<V> id, StreamMemberEncoder<RegistryFriendlyByteBuf, V> encoder, StreamDecoder<RegistryFriendlyByteBuf, V> decoder
    ) {
+//#if MC >= 26_00_00
+      //$$ PayloadTypeRegistry.serverboundPlay().register(id, StreamCodec.ofMember(encoder, decoder));
+      //$$ PayloadTypeRegistry.clientboundPlay().register(id, StreamCodec.ofMember(encoder, decoder));
+//#else
       PayloadTypeRegistry.playC2S().register(id, StreamCodec.ofMember(encoder, decoder));
       PayloadTypeRegistry.playS2C().register(id, StreamCodec.ofMember(encoder, decoder));
+//#endif
    }
 
    public static <V extends CustomPacketPayload> void registerNetworkReceiver(Type<V> id, PlayPayloadHandler<V> handler) {

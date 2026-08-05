@@ -16,8 +16,13 @@ public class RegistryServer {
 			final StreamMemberEncoder<RegistryFriendlyByteBuf, V> encoder,
 			final StreamDecoder<RegistryFriendlyByteBuf, V> decoder
 	) {
+//#if MC >= 26_00_00
+		//$$ PayloadTypeRegistry.serverboundPlay().register(id, StreamCodec.ofMember(encoder, decoder));
+		//$$ PayloadTypeRegistry.clientboundPlay().register(id, StreamCodec.ofMember(encoder, decoder));
+//#else
 		PayloadTypeRegistry.playC2S().register(id, StreamCodec.ofMember(encoder, decoder));
 		PayloadTypeRegistry.playS2C().register(id, StreamCodec.ofMember(encoder, decoder));
+//#endif
 	}
 
 	public static <V extends CustomPacketPayload> void registerNetworkReceiver(

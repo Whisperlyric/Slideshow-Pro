@@ -3,7 +3,11 @@ package org.teacon.slides.projector;
 import com.mojang.blaze3d.platform.Lighting;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+//#if MC >= 26_00_00
+//$$ import net.minecraft.client.gui.GuiGraphicsExtractor;
+//#else
 import net.minecraft.client.gui.GuiGraphics;
+//#endif
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.Screen;
@@ -87,8 +91,18 @@ public class ImageSourceScreen extends Screen {
       }
    }
 
-   public void render(GuiGraphics context, int mouseX, int mouseY, float delta) {
-//#if MC >= 12108
+//#if MC >= 26_00_00
+   //$$ public void extractRenderState(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
+      //$$ try (Lighting lighting = new Lighting()) {
+         //$$ lighting.setupFor(Lighting.Entry.ITEMS_FLAT);
+         //$$ this.extractBackground(context, mouseX, mouseY, delta);
+         //$$ context.centeredText(this.font, this.title, this.width / 2, 40, 16777215);
+         //$$ lighting.setupFor(Lighting.Entry.ITEMS_3D);
+         //$$ super.extractRenderState(context, mouseX, mouseY, delta);
+      //$$ }
+   //$$ }
+//#elseif MC >= 12108
+   //$$ public void render(GuiGraphics context, int mouseX, int mouseY, float delta) {
       //$$ try (Lighting lighting = new Lighting()) {
          //$$ lighting.setupFor(Lighting.Entry.ITEMS_FLAT);
          //$$ this.renderBackground(context, mouseX, mouseY, delta);
@@ -96,16 +110,22 @@ public class ImageSourceScreen extends Screen {
          //$$ lighting.setupFor(Lighting.Entry.ITEMS_3D);
          //$$ super.render(context, mouseX, mouseY, delta);
       //$$ }
+   //$$ }
 //#else
+   public void render(GuiGraphics context, int mouseX, int mouseY, float delta) {
       Lighting.setupForFlatItems();
       this.renderBackground(context, mouseX, mouseY, delta);
       context.drawCenteredString(this.font, this.title, this.width / 2, 40, 16777215);
       Lighting.setupFor3DItems();
       super.render(context, mouseX, mouseY, delta);
-//#endif
    }
+//#endif
 
    private void finishEditing() {
+//#if MC >= 26_02_00
+      //$$ this.minecraft.setScreenAndShow(null);
+//#else
       this.minecraft.setScreen(null);
+//#endif
    }
 }
